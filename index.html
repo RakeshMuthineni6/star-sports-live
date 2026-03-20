@@ -51,42 +51,17 @@
         .team-info div { font-weight: bold; font-size: 14px; }
         .vs-divider { font-weight: 800; font-size: 20px; color: white; }
         
-        /* --- UPDATED LIVE TAG (RED ONLY FOR TEXT) --- */
-        .live-tag { 
-            background: #e50914; 
-            color: white;
-            font-size: 10px; 
-            padding: 2px 8px; 
-            border-radius: 4px; 
-            font-weight: bold; 
-            text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            animation: blink 1.2s infinite; 
-        }
-        .live-tag::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: white;
-            border-radius: 50%;
-        }
+        .live-tag { background: #e50914; color: white; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; animation: blink 1.2s infinite; }
+        .live-tag::before { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
         @keyframes blink { 50% { opacity: 0.5; } }
         
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .watch-btn { background: var(--accent); color: black; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; font-size: 12px; }
 
-        /* --- LINK SELECTION OVERLAY --- */
-        #link-selection-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9); z-index: 15000; animation: fadeIn 0.3s;
-        }
+        /* --- LINK SELECTION --- */
+        #link-selection-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 15000; animation: fadeIn 0.3s; }
         .link-container { padding: 30px 20px; }
-        .link-row {
-            background: var(--card); margin-bottom: 12px; padding: 15px; border-radius: 12px;
-            display: flex; align-items: center; border: 1px solid #1c3631; cursor: pointer;
-        }
+        .link-row { background: var(--card); margin-bottom: 12px; padding: 15px; border-radius: 12px; display: flex; align-items: center; border: 1px solid #1c3631; cursor: pointer; }
         .link-row:active { background: #1c3a35; }
         .link-icon { color: var(--accent); font-size: 20px; margin-right: 20px; }
         .link-text { font-weight: bold; font-size: 16px; }
@@ -98,8 +73,7 @@
         video { width: 100%; height: auto; max-height: 100%; }
 
         .gesture-zone { position: absolute; top: 0; width: 40%; height: 100%; z-index: 20005; }
-        #left-zone { left: 0; }
-        #right-zone { right: 0; }
+        #left-zone { left: 0; } #right-zone { right: 0; }
 
         .p-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); display: flex; flex-direction: column; justify-content: space-between; z-index: 20010; transition: 0.4s; pointer-events: none; }
         .p-ui.hide { opacity: 0; }
@@ -171,13 +145,13 @@
                 <i class="fa-solid fa-lock-open" id="lock-icon" onclick="toggleLock(event)"></i>
             </div>
             <div class="p-mid">
-                <i class="fa-solid fa-rotate-left" style="font-size: 30px;" onclick="skip(-10, event)"></i>
+                <i class="fa-solid fa-rotate-left" onclick="skip(-10, event)"></i>
                 <i class="fa-solid fa-play" id="play-pause-btn" onclick="togglePlay(event)"></i>
-                <i class="fa-solid fa-rotate-right" style="font-size: 30px;" onclick="skip(10, event)"></i>
+                <i class="fa-solid fa-rotate-right" onclick="skip(10, event)"></i>
             </div>
             <div class="p-bottom">
                 <input type="range" id="seek-slider" value="0" style="width:100%; accent-color:#f7d417;">
-                <div class="d-flex justify-content-between mt-2" style="font-size: 12px; color: #ddd;">
+                <div class="d-flex justify-content-between mt-2" style="font-size: 12px;">
                     <span id="time-label">00:00 / 00:00</span>
                     <i class="fa-solid fa-expand" onclick="toggleFS(event)"></i>
                 </div>
@@ -193,16 +167,16 @@
     const allMatches = [
         { cat: "Cricket", title: "T20 International", t1: "New Zealand", t1_img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg", t2: "South Africa", t2_img: "https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg",
           links: [
-              { name: "English 1 WILLOW ( WORLDWIDE 🌐 )", url: LIVE_STREAM_URL },
-              { name: "English 2 FanCode ( WORLDWIDE 🌐 )", url: LIVE_STREAM_URL },
-              { name: "Hindi HD ( FAST STREAM ⚡ )", url: LIVE_STREAM_URL }
+              { name: "English 1 WILLOW", url: LIVE_STREAM_URL },
+              { name: "English 2 FanCode", url: LIVE_STREAM_URL },
+              { name: "Hindi HD (⚡ FAST)", url: LIVE_STREAM_URL }
           ]
         },
         { cat: "IPL", title: "IPL Season 2026", t1: "RCB", t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Royal_Challengers_Bangalore_2020_Logo.svg/1200px-Royal_Challengers_Bangalore_2020_Logo.svg.png", t2: "SRH", t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/1200px-Sunrisers_Hyderabad.svg.png",
           links: [
               { name: "Link 1 - Star Sports HD", url: LIVE_STREAM_URL },
               { name: "Link 2 - JioCinema Pro", url: LIVE_STREAM_URL },
-              { name: "Link 3 - Willow Cricket", url: LIVE_STREAM_URL }
+              { name: "Link 3 - Willow HD", url: LIVE_STREAM_URL }
           ]
         }
     ];
@@ -220,6 +194,17 @@
             setTimeout(() => { splash.style.display = 'none'; refreshData(); }, 500);
         }, 3000);
     });
+
+    // --- SMART SHARE FEATURE (Fixed for Apps) ---
+    function shareApp() {
+        if (navigator.share) {
+            navigator.share({ title: 'SportSync Live', text: SHARE_MSG }).catch(() => {
+                window.location.href = "whatsapp://send?text=" + encodeURIComponent(SHARE_MSG);
+            });
+        } else {
+            window.location.href = "whatsapp://send?text=" + encodeURIComponent(SHARE_MSG);
+        }
+    }
 
     function renderUI(data) {
         const list = document.getElementById('match-list');
@@ -248,24 +233,25 @@
         linkList.innerHTML = match.links.map(link => `
             <div class="link-row" onclick="playStream('${link.url}', '${link.name}')">
                 <i class="fa-solid fa-chevron-right link-icon"></i>
-                <div><span class="link-text">${link.name}</span><span class="link-sub">Link</span></div>
+                <div><span class="link-text">${link.name}</span><span class="link-sub">Streaming Link</span></div>
             </div>
         `).join('');
         linkOverlay.style.display = 'block';
     }
+
     function closeLinkOverlay() { linkOverlay.style.display = 'none'; }
     function playStream(url, title) { closeLinkOverlay(); playerLayer.style.display = 'block'; document.getElementById('video-title').innerText = title; if (Hls.isSupported() && url.includes('.m3u8')) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } else { video.src = url; video.play().catch(()=>{}); } showUI(); }
-    function shareApp() { if (navigator.share) { navigator.share({ title: 'SportSync Live', text: SHARE_MSG }).catch(console.error); } }
-    function toggleSearch() { const s = document.getElementById('searchBox'); s.style.display = (s.style.display === 'block') ? 'none' : 'block'; if(s.style.display === 'block') document.getElementById('searchInput').focus(); }
-    function hideSearch() { const s = document.getElementById('searchBox'); s.style.display = 'none'; document.getElementById('searchInput').value = ''; }
-    function filterData(cat, btn) { hideSearch(); document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const filtered = cat === 'All' ? allMatches : allMatches.filter(m => m.cat === cat); renderUI(filtered); }
-    function refreshData() { hideSearch(); document.getElementById('match-list').innerHTML = "<div class='text-center mt-5'><div class='spinner-border text-warning'></div></div>"; setTimeout(() => renderUI(allMatches), 800); }
-    function searchFn() { const val = document.getElementById('searchInput').value.toLowerCase(); const filtered = allMatches.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val)); renderUI(filtered); }
-    function updateCounts() { document.getElementById('c-all').innerText = allMatches.length; document.getElementById('c-cricket').innerText = allMatches.filter(m => m.cat === 'Cricket').length; document.getElementById('c-ipl').innerText = allMatches.filter(m => m.cat === 'IPL').length; }
     function closePlayer() { playerLayer.style.display = 'none'; video.pause(); video.src = ""; }
     function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); updatePlayBtn(); }
     function updatePlayBtn() { document.getElementById('play-pause-btn').className = video.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause'; }
     function skip(v, e) { e.stopPropagation(); video.currentTime += v; }
+    function toggleSearch() { const s = document.getElementById('searchBox'); s.style.display = (s.style.display === 'block') ? 'none' : 'block'; if(s.style.display === 'block') document.getElementById('searchInput').focus(); }
+    function filterData(cat, btn) { document.getElementById('searchBox').style.display='none'; document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const filtered = cat === 'All' ? allMatches : allMatches.filter(m => m.cat === cat); renderUI(filtered); }
+    function refreshData() { document.getElementById('searchBox').style.display='none'; document.getElementById('match-list').innerHTML = "<div class='text-center mt-5'><div class='spinner-border text-warning'></div></div>"; setTimeout(() => renderUI(allMatches), 800); }
+    function searchFn() { const val = document.getElementById('searchInput').value.toLowerCase(); renderUI(allMatches.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); }
+    function updateCounts() { document.getElementById('c-all').innerText = allMatches.length; document.getElementById('c-cricket').innerText = allMatches.filter(m => m.cat === 'Cricket').length; document.getElementById('c-ipl').innerText = allMatches.filter(m => m.cat === 'IPL').length; }
+
+    // Gestures Logic
     let startY, startVal;
     document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startVal = brightness; document.getElementById('bright-box').style.display = 'flex'; });
     document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let delta = (startY - e.touches[0].pageY) / 150; brightness = Math.min(Math.max(startVal + delta, 0), 1); document.getElementById('br-mask').style.opacity = 1 - brightness; document.getElementById('b-fill').style.height = (brightness * 100) + '%'; });
@@ -274,10 +260,9 @@
     document.querySelectorAll('.gesture-zone').forEach(zone => { zone.addEventListener('touchend', () => { document.querySelectorAll('.gesture-box').forEach(b => b.style.display = 'none'); }); zone.addEventListener('click', () => { if(!isLocked) pUI.classList.toggle('hide'); showUI(); }); });
     function showUI() { pUI.classList.remove('hide'); clearTimeout(window.uTimer); if(!video.paused) window.uTimer = setTimeout(() => pUI.classList.add('hide'), 3500); }
     function toggleLock(e) { e.stopPropagation(); isLocked = !isLocked; document.getElementById('lock-icon').className = isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open'; pUI.classList.toggle('hide', isLocked); }
-    video.addEventListener('timeupdate', () => { const cur = formatTime(video.currentTime); const dur = formatTime(video.duration); document.getElementById('time-label').innerText = `${cur} / ${dur}`; document.getElementById('seek-slider').value = (video.currentTime / video.duration) * 100 || 0; });
+    video.addEventListener('timeupdate', () => { document.getElementById('time-label').innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`; document.getElementById('seek-slider').value = (video.currentTime / video.duration) * 100 || 0; });
     function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s / 60); const sec = Math.floor(s % 60); return `${m < 10 ? '0'+m : m}:${sec < 10 ? '0'+sec : sec}`; }
     function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
-    window.onload = refreshData;
 </script>
 </body>
 </html>
