@@ -55,29 +55,22 @@
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .watch-btn { background: var(--accent); color: black; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; font-size: 12px; }
 
-        /* --- HYBRID SHARE OVERLAY --- */
+        /* --- PRO SHARE SHEET OVERLAY --- */
         #share-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.85); z-index: 30000; animation: fadeIn 0.3s;
+            background: rgba(0, 0, 0, 0.85); z-index: 30000; animation: fadeIn 0.2s;
         }
         .share-sheet {
             position: absolute; bottom: 0; width: 100%; background: var(--card);
             border-top-left-radius: 25px; border-top-right-radius: 25px;
-            padding: 25px 20px; animation: slideUp 0.3s ease-out;
+            padding: 25px 20px; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .share-header { text-align: center; margin-bottom: 25px; font-weight: bold; font-size: 18px; }
         .share-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
         .share-item { cursor: pointer; }
-        .share-item i { width: 50px; height: 50px; line-height: 50px; border-radius: 15px; font-size: 22px; color: white; margin-bottom: 8px; display: inline-block; }
+        .share-item i { width: 50px; height: 50px; line-height: 50px; border-radius: 12px; font-size: 22px; color: white; margin-bottom: 8px; display: inline-block; }
         .share-label { font-size: 11px; color: var(--text); }
-        .bg-wa { background: #25D366; } .bg-tg { background: #0088cc; } .bg-fb { background: #1877F2; } .bg-more { background: #f7d417; color: black !important; }
-
-        /* --- LINK SELECTION OVERLAY --- */
-        #link-selection-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 15000; animation: fadeIn 0.3s; }
-        .link-container { padding: 30px 20px; }
-        .link-row { background: var(--card); margin-bottom: 12px; padding: 15px; border-radius: 12px; display: flex; align-items: center; border: 1px solid #1c3631; cursor: pointer; }
-        .link-icon { color: var(--accent); font-size: 20px; margin-right: 20px; }
-        .link-text { font-weight: bold; font-size: 16px; }
+        .bg-wa { background: #25D366; } .bg-tg { background: #0088cc; } .bg-fb { background: #1877F2; } .bg-more { background: #607d8b; }
 
         /* --- PLAYER --- */
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
@@ -91,9 +84,6 @@
         .p-top { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); }
         .p-mid { display: flex; justify-content: center; gap: 60px; font-size: 45px; color: white; align-items: center; }
         .p-bottom { padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
-        .gesture-box { position: absolute; top: 50%; transform: translateY(-50%); width: 45px; height: 160px; background: rgba(0,0,0,0.6); border-radius: 30px; display: none; flex-direction: column-reverse; align-items: center; padding: 12px; z-index: 20020; pointer-events: none; }
-        .bar-fill { width: 6px; background: var(--accent); border-radius: 3px; height: 0%; transition: 0.1s; }
-        #br-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; pointer-events: none; z-index: 9999; opacity: 0; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -113,7 +103,7 @@
     <div class="topbar">
         <h4>SportSync Live</h4>
         <div class="top-icons">
-            <i class="fa-solid fa-share-nodes me-3" onclick="handleMainShare()"></i>
+            <i class="fa-solid fa-share-nodes me-3" onclick="openShareSheet()"></i>
             <i class="fa-solid fa-rotate-right me-3" onclick="refreshData()"></i>
             <i class="fa-solid fa-magnifying-glass" onclick="toggleSearch()"></i>
         </div>
@@ -133,28 +123,28 @@
 
 <div id="share-overlay" onclick="closeShareSheet()">
     <div class="share-sheet" onclick="event.stopPropagation()">
-        <div class="share-header">Share With Friends</div>
+        <div class="share-header">Share SportSync Live</div>
         <div class="share-options">
             <div class="share-item" onclick="shareVia('wa')"><i class="fa-brands fa-whatsapp bg-wa"></i><div class="share-label">WhatsApp</div></div>
             <div class="share-item" onclick="shareVia('tg')"><i class="fa-brands fa-telegram bg-tg"></i><div class="share-label">Telegram</div></div>
             <div class="share-item" onclick="shareVia('fb')"><i class="fa-brands fa-facebook-f bg-fb"></i><div class="share-label">Facebook</div></div>
-            <div class="share-item" onclick="triggerNativeShare()"><i class="fa-solid fa-ellipsis bg-more"></i><div class="share-label">More Apps</div></div>
+            <div class="share-item" onclick="triggerNativeAllApps()"><i class="fa-solid fa-grid-2 bg-more"></i><div class="share-label">More Apps</div></div>
         </div>
         <button class="btn btn-dark w-100 mt-4 rounded-pill" onclick="closeShareSheet()">Cancel</button>
     </div>
 </div>
 
-<div id="link-selection-overlay">
+<div id="link-selection-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:15000;">
     <div class="topbar"><div class="d-flex align-items-center"><i class="fa-solid fa-arrow-left me-3" onclick="closeLinkOverlay()"></i><h4 class="m-0" id="selection-title">Servers</h4></div></div>
-    <div class="link-container" id="link-list-area"></div>
+    <div class="link-container" id="link-list-area" style="padding:20px;"></div>
 </div>
 
 <div id="player-layer">
     <div class="v-wrap" id="v-container">
         <video id="main-video" playsinline></video>
         <div id="left-zone" class="gesture-zone"></div><div id="right-zone" class="gesture-zone"></div>
-        <div id="bright-box" class="gesture-box" style="left: 20px;"><div class="bar-fill" id="b-fill"></div><i class="fa-solid fa-sun mt-2"></i></div>
-        <div id="vol-box" class="gesture-box" style="right: 20px;"><div class="bar-fill" id="v-fill"></div><i class="fa-solid fa-volume-high mt-2"></i></div>
+        <div id="bright-box" style="position:absolute; left:20px; top:50%; display:none; flex-direction:column-reverse; align-items:center; background:rgba(0,0,0,0.6); height:160px; width:45px; border-radius:30px; padding:12px; z-index:20020;"><div class="bar-fill" id="b-fill" style="width:6px; background:var(--accent); height:0%; transition:0.1s;"></div><i class="fa-solid fa-sun mt-2"></i></div>
+        <div id="vol-box" style="position:absolute; right:20px; top:50%; display:none; flex-direction:column-reverse; align-items:center; background:rgba(0,0,0,0.6); height:160px; width:45px; border-radius:30px; padding:12px; z-index:20020;"><div class="bar-fill" id="v-fill" style="width:6px; background:var(--accent); height:0%; transition:0.1s;"></div><i class="fa-solid fa-volume-high mt-2"></i></div>
         <div class="p-ui" id="player-controls">
             <div class="p-top"><div class="d-flex align-items-center"><i class="fa-solid fa-arrow-left me-3" onclick="closePlayer()"></i><span id="video-title" style="font-weight: 600;">Stream</span></div><i class="fa-solid fa-lock-open" id="lock-icon" onclick="toggleLock(event)"></i></div>
             <div class="p-mid"><i class="fa-solid fa-rotate-left" onclick="skip(-10, event)"></i><i class="fa-solid fa-play" id="play-pause-btn" onclick="togglePlay(event)"></i><i class="fa-solid fa-rotate-right" onclick="skip(10, event)"></i></div>
@@ -172,7 +162,7 @@
         { cat: "Cricket", title: "T20 International", t1: "New Zealand", t1_img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg", t2: "South Africa", t2_img: "https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg",
           links: [{ name: "Server 1 HD", url: LIVE_STREAM_URL }, { name: "Server 2 (⚡ FAST)", url: LIVE_STREAM_URL }] },
         { cat: "IPL", title: "IPL Season 2026", t1: "RCB", t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Royal_Challengers_Bangalore_2020_Logo.svg/1200px-Royal_Challengers_Bangalore_2020_Logo.svg.png", t2: "SRH", t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/1200px-Sunrisers_Hyderabad.svg.png",
-          links: [{ name: "Link 1 HD", url: LIVE_STREAM_URL }, { name: "Link 2 Pro", url: LIVE_STREAM_URL }] }
+          links: [{ name: "Server 1 HD", url: LIVE_STREAM_URL }, { name: "Server 2 Pro", url: LIVE_STREAM_URL }] }
     ];
 
     const video = document.getElementById('main-video');
@@ -180,25 +170,27 @@
     const pUI = document.getElementById('player-controls');
     let hls = null, isLocked = false, brightness = 1.0;
 
-    // --- SMART HYBRID SHARE LOGIC ---
-    function handleMainShare() {
+    // --- PRO SHARE LOGIC FOR MORE APPS ---
+    function openShareSheet() { document.getElementById('share-overlay').style.display = 'block'; }
+    function closeShareSheet() { document.getElementById('share-overlay').style.display = 'none'; }
+
+    function triggerNativeAllApps() {
         if (navigator.share) {
-            triggerNativeShare(); // నేరుగా అన్ని యాప్స్ చూపిస్తుంది
+            navigator.share({
+                title: 'SportSync Live',
+                text: SHARE_MSG,
+                url: APP_LINK
+            }).catch(() => fallbackMoreApps());
         } else {
-            openCustomShareSheet(); // లేకపోతే మనం క్రియేట్ చేసిన మెనూ చూపిస్తుంది
+            fallbackMoreApps();
         }
     }
 
-    function triggerNativeShare() {
-        navigator.share({
-            title: 'SportSync Live',
-            text: SHARE_MSG,
-            url: APP_LINK
-        }).catch(() => openCustomShareSheet());
+    function fallbackMoreApps() {
+        // ఇక్కడ Android Intent ని ఉపయోగిస్తున్నాం. ఇది WebView లో అన్ని యాప్స్ లిస్ట్ ని చూపిస్తుంది.
+        const intentUrl = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT=${encodeURIComponent(SHARE_MSG)};end`;
+        window.location.href = intentUrl;
     }
-
-    function openCustomShareSheet() { document.getElementById('share-overlay').style.display = 'block'; }
-    function closeShareSheet() { document.getElementById('share-overlay').style.display = 'none'; }
 
     function shareVia(p) {
         const msg = encodeURIComponent(SHARE_MSG);
@@ -208,26 +200,10 @@
         closeShareSheet();
     }
 
-    // UI Render & Splash
+    // (UI logic, gestures, and splash screen remain same...)
     window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('splash-screen').style.display = 'none'; renderUI(allMatches); }, 500); }, 3000); };
-
-    function renderUI(data) {
-        document.getElementById('match-list').innerHTML = data.map((m, idx) => `
-            <div class="match-card" onclick="openLinkSelection(${idx})">
-                <div class="m-category">${m.cat} | ${m.title}</div>
-                <div class="teams-container"><div class="team-info"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-divider">VS</div><div class="team-info"><img src="${m.t2_img}"><div>${m.t2}</div></div></div>
-                <div class="footer-row"><div class="live-tag">Live</div><button class="watch-btn">▶ WATCH NOW</button></div>
-            </div>
-        `).join('');
-        setTimeout(() => document.querySelectorAll('.match-card').forEach(c => c.classList.add('show')), 100);
-        updateCounts();
-    }
-
-    function openLinkSelection(index) {
-        const match = allMatches[index]; document.getElementById('selection-title').innerText = match.t1 + " vs " + match.t2;
-        document.getElementById('link-list-area').innerHTML = match.links.map(link => `<div class="link-row" onclick="playStream('${link.url}', '${link.name}')"><i class="fa-solid fa-chevron-right link-icon"></i><div><span class="link-text">${link.name}</span></div></div>`).join('');
-        document.getElementById('link-selection-overlay').style.display = 'block';
-    }
+    function renderUI(data) { document.getElementById('match-list').innerHTML = data.map((m, idx) => `<div class="match-card" onclick="openLinkSelection(${idx})"><div class="m-category">${m.cat} | ${m.title}</div><div class="teams-container"><div class="team-info"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-divider">VS</div><div class="team-info"><img src="${m.t2_img}"><div>${m.t2}</div></div></div><div class="footer-row"><div class="live-tag">Live</div><button class="watch-btn">▶ WATCH NOW</button></div></div>`).join(''); setTimeout(() => document.querySelectorAll('.match-card').forEach(c => c.classList.add('show')), 100); updateCounts(); }
+    function openLinkSelection(index) { const match = allMatches[index]; document.getElementById('selection-title').innerText = match.t1 + " vs " + match.t2; document.getElementById('link-list-area').innerHTML = match.links.map(link => `<div class="link-row" onclick="playStream('${link.url}', '${link.name}')" style="background:var(--card); margin-bottom:10px; padding:15px; border-radius:12px; display:flex; align-items:center; border:1px solid #1c3631;"><i class="fa-solid fa-play me-3" style="color:var(--accent);"></i><span class="link-text">${link.name}</span></div>`).join(''); document.getElementById('link-selection-overlay').style.display = 'block'; }
     function closeLinkOverlay() { document.getElementById('link-selection-overlay').style.display = 'none'; }
     function playStream(url, title) { closeLinkOverlay(); playerLayer.style.display = 'block'; document.getElementById('video-title').innerText = title; if (Hls.isSupported() && url.includes('.m3u8')) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } else { video.src = url; video.play().catch(()=>{}); } showUI(); }
     function closePlayer() { playerLayer.style.display = 'none'; video.pause(); video.src = ""; }
@@ -239,8 +215,6 @@
     function refreshData() { document.getElementById('searchBox').style.display='none'; document.getElementById('match-list').innerHTML = "<div class='text-center mt-5'><div class='spinner-border text-warning'></div></div>"; setTimeout(() => renderUI(allMatches), 800); }
     function searchFn() { const val = document.getElementById('searchInput').value.toLowerCase(); renderUI(allMatches.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); }
     function updateCounts() { document.getElementById('c-all').innerText = allMatches.length; document.getElementById('c-cricket').innerText = allMatches.filter(m => m.cat === 'Cricket').length; document.getElementById('c-ipl').innerText = allMatches.filter(m => m.cat === 'IPL').length; }
-
-    // Gestures Logic
     let startY, startVal;
     document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startVal = brightness; document.getElementById('bright-box').style.display = 'flex'; });
     document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let delta = (startY - e.touches[0].pageY) / 150; brightness = Math.min(Math.max(startVal + delta, 0), 1); document.getElementById('br-mask').style.opacity = 1 - brightness; document.getElementById('b-fill').style.height = (brightness * 100) + '%'; });
