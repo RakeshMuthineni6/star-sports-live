@@ -55,7 +55,7 @@
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .watch-btn { background: var(--accent); color: black; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; font-size: 12px; }
 
-        /* --- PRO SHARE SHEET OVERLAY --- */
+        /* --- HYBRID SHARE OVERLAY --- */
         #share-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0, 0, 0, 0.85); z-index: 30000; animation: fadeIn 0.2s;
@@ -128,7 +128,7 @@
             <div class="share-item" onclick="shareVia('wa')"><i class="fa-brands fa-whatsapp bg-wa"></i><div class="share-label">WhatsApp</div></div>
             <div class="share-item" onclick="shareVia('tg')"><i class="fa-brands fa-telegram bg-tg"></i><div class="share-label">Telegram</div></div>
             <div class="share-item" onclick="shareVia('fb')"><i class="fa-brands fa-facebook-f bg-fb"></i><div class="share-label">Facebook</div></div>
-            <div class="share-item" onclick="triggerNativeAllApps()"><i class="fa-solid fa-grid-2 bg-more"></i><div class="share-label">More Apps</div></div>
+            <div class="share-item" onclick="triggerNativeShare()"><i class="fa-solid fa-share-nodes bg-more"></i><div class="share-label">More Apps</div></div>
         </div>
         <button class="btn btn-dark w-100 mt-4 rounded-pill" onclick="closeShareSheet()">Cancel</button>
     </div>
@@ -162,7 +162,7 @@
         { cat: "Cricket", title: "T20 International", t1: "New Zealand", t1_img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg", t2: "South Africa", t2_img: "https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg",
           links: [{ name: "Server 1 HD", url: LIVE_STREAM_URL }, { name: "Server 2 (⚡ FAST)", url: LIVE_STREAM_URL }] },
         { cat: "IPL", title: "IPL Season 2026", t1: "RCB", t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Royal_Challengers_Bangalore_2020_Logo.svg/1200px-Royal_Challengers_Bangalore_2020_Logo.svg.png", t2: "SRH", t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/1200px-Sunrisers_Hyderabad.svg.png",
-          links: [{ name: "Server 1 HD", url: LIVE_STREAM_URL }, { name: "Server 2 Pro", url: LIVE_STREAM_URL }] }
+          links: [{ name: "Link 1 HD", url: LIVE_STREAM_URL }, { name: "Link 2 Pro", url: LIVE_STREAM_URL }] }
     ];
 
     const video = document.getElementById('main-video');
@@ -170,26 +170,28 @@
     const pUI = document.getElementById('player-controls');
     let hls = null, isLocked = false, brightness = 1.0;
 
-    // --- PRO SHARE LOGIC FOR MORE APPS ---
+    // --- UPDATED FIXED SHARE LOGIC ---
     function openShareSheet() { document.getElementById('share-overlay').style.display = 'block'; }
     function closeShareSheet() { document.getElementById('share-overlay').style.display = 'none'; }
 
-    function triggerNativeAllApps() {
+    function triggerNativeShare() {
         if (navigator.share) {
+            // బ్రౌజర్ సపోర్ట్ ఉంటే నేటివ్ షేర్ షీట్ ఓపెన్ చేస్తుంది (Most Apps)
             navigator.share({
                 title: 'SportSync Live',
                 text: SHARE_MSG,
                 url: APP_LINK
-            }).catch(() => fallbackMoreApps());
+            }).catch(() => fallbackCopy());
         } else {
-            fallbackMoreApps();
+            fallbackCopy();
         }
     }
 
-    function fallbackMoreApps() {
-        // ఇక్కడ Android Intent ని ఉపయోగిస్తున్నాం. ఇది WebView లో అన్ని యాప్స్ లిస్ట్ ని చూపిస్తుంది.
-        const intentUrl = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT=${encodeURIComponent(SHARE_MSG)};end`;
-        window.location.href = intentUrl;
+    function fallbackCopy() {
+        // WebView ఎర్రర్ ఇస్తే లింక్ ని క్లిప్‌బోర్డ్ కి కాపీ చేస్తుంది
+        navigator.clipboard.writeText(SHARE_MSG);
+        alert("Sharing apps not reachable. Link copied to clipboard! You can now paste it anywhere.");
+        closeShareSheet();
     }
 
     function shareVia(p) {
@@ -200,7 +202,7 @@
         closeShareSheet();
     }
 
-    // (UI logic, gestures, and splash screen remain same...)
+    // UI logic
     window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('splash-screen').style.display = 'none'; renderUI(allMatches); }, 500); }, 3000); };
     function renderUI(data) { document.getElementById('match-list').innerHTML = data.map((m, idx) => `<div class="match-card" onclick="openLinkSelection(${idx})"><div class="m-category">${m.cat} | ${m.title}</div><div class="teams-container"><div class="team-info"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-divider">VS</div><div class="team-info"><img src="${m.t2_img}"><div>${m.t2}</div></div></div><div class="footer-row"><div class="live-tag">Live</div><button class="watch-btn">▶ WATCH NOW</button></div></div>`).join(''); setTimeout(() => document.querySelectorAll('.match-card').forEach(c => c.classList.add('show')), 100); updateCounts(); }
     function openLinkSelection(index) { const match = allMatches[index]; document.getElementById('selection-title').innerText = match.t1 + " vs " + match.t2; document.getElementById('link-list-area').innerHTML = match.links.map(link => `<div class="link-row" onclick="playStream('${link.url}', '${link.name}')" style="background:var(--card); margin-bottom:10px; padding:15px; border-radius:12px; display:flex; align-items:center; border:1px solid #1c3631;"><i class="fa-solid fa-play me-3" style="color:var(--accent);"></i><span class="link-text">${link.name}</span></div>`).join(''); document.getElementById('link-selection-overlay').style.display = 'block'; }
