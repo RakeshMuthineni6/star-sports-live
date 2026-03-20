@@ -22,7 +22,6 @@
         }
         .splash-logo { width: 120px; height: 120px; border-radius: 25px; box-shadow: 0 0 30px rgba(247, 212, 23, 0.4); margin-bottom: 20px; border: 2px solid var(--accent); object-fit: cover; }
         .splash-name { font-size: 26px; font-weight: bold; color: white; letter-spacing: 1px; }
-        .splash-version { position: absolute; bottom: 40px; font-size: 13px; color: var(--text); }
         .loader-dot { width: 45px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 15px; position: relative; overflow: hidden; }
         .loader-dot::after { content: ''; position: absolute; left: -100%; width: 100%; height: 100%; background: var(--accent); animation: loading 1.5s infinite; }
         @keyframes loading { 100% { left: 100%; } }
@@ -43,7 +42,6 @@
         .badge-count { background: #e50914; border-radius: 50%; padding: 1px 6px; font-size: 10px; margin-left: 6px; border: 1px solid white; }
 
         .match-card { background: var(--card); margin: 12px 15px; border-radius: 15px; padding: 18px; border: 1px solid #1c3631; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transform: translateY(10px); transition: 0.4s ease-out; cursor: pointer; }
-        .match-card:active { transform: scale(0.98); background: #132b28; }
         .match-card.show { opacity: 1; transform: translateY(0); }
         .m-category { font-size: 11px; color: var(--text); margin-bottom: 12px; font-weight: 600; text-transform: uppercase; }
         .teams-container { display: flex; justify-content: space-between; align-items: center; text-align: center; }
@@ -51,6 +49,7 @@
         .team-info div { font-weight: bold; font-size: 14px; }
         .vs-divider { font-weight: 800; font-size: 20px; color: white; }
         
+        /* LIVE TAG */
         .live-tag { background: #e50914; color: white; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; animation: blink 1.2s infinite; }
         .live-tag::before { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
         @keyframes blink { 50% { opacity: 0.5; } }
@@ -58,7 +57,7 @@
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .watch-btn { background: var(--accent); color: black; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; font-size: 12px; }
 
-        /* --- LINK SELECTION --- */
+        /* --- LINK SELECTION OVERLAY --- */
         #link-selection-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 15000; animation: fadeIn 0.3s; }
         .link-container { padding: 30px 20px; }
         .link-row { background: var(--card); margin-bottom: 12px; padding: 15px; border-radius: 12px; display: flex; align-items: center; border: 1px solid #1c3631; cursor: pointer; }
@@ -96,7 +95,6 @@
     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGEMIb2NLYINkRimbJUxmjfY_GeETgfph0hH2csK7sYmxC4upohieqkyB-43fg_HoQmgHhp0aNSLy2aGfy_fJI7uIReIAqWMfC8T1L65oTbMMAaRDBKwcLDxSM5Fi9SjvGyGVab4BGC85pmFFnpnXIyeOsd3hcNs5Vg0Zz6msAGXX8HUg7OUOac_skmn8/s2048/Gemini_Generated_Image_a89yqoa89yqoa89y.png" class="splash-logo" alt="App Icon">
     <div class="splash-name">SportSync Live</div>
     <div class="loader-dot"></div>
-    <div class="splash-version">Version 1.0 (PRO)</div>
 </div>
 
 <div id="app-view">
@@ -195,14 +193,24 @@
         }, 3000);
     });
 
-    // --- SMART SHARE FEATURE (Fixed for Apps) ---
+    // --- UPDATED MULTI-SHARE FUNCTION ---
     function shareApp() {
         if (navigator.share) {
-            navigator.share({ title: 'SportSync Live', text: SHARE_MSG }).catch(() => {
-                window.location.href = "whatsapp://send?text=" + encodeURIComponent(SHARE_MSG);
+            // ఇది నేరుగా మొబైల్ సిస్టమ్ షేర్ షీట్‌ను ఓపెన్ చేస్తుంది (All Apps)
+            navigator.share({
+                title: 'SportSync Live',
+                text: SHARE_MSG,
+                url: 'https://play.google.com/store/apps/details?id=starsports.aplitob'
+            }).then(() => {
+                console.log('Successfully shared');
+            }).catch((error) => {
+                // ఒకవేళ యూజర్ క్యాన్సిల్ చేస్తే లేదా ఎర్రర్ వస్తే
+                console.log('Error sharing:', error);
             });
         } else {
-            window.location.href = "whatsapp://send?text=" + encodeURIComponent(SHARE_MSG);
+            // WebView లో navigator.share లేకపోతే సోషల్ మీడియా లింక్ ఓపెన్ చేస్తుంది
+            const webShareUrl = "https://www.addtoany.com/share#url=https://play.google.com/store/apps/details?id=starsports.aplitob&title=SportSync%20Live";
+            window.open(webShareUrl, '_blank');
         }
     }
 
