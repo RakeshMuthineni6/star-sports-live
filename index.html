@@ -9,6 +9,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1895449179923280" crossorigin="anonymous"></script>
+
     <style>
         :root { --bg: #051412; --card: #0e2522; --accent: #f7d417; --text: #bfc9c7; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -40,6 +42,7 @@
         .f-btn.active { border-color: var(--accent); background: #1c3a35; }
         .badge-count { background: #e50914; border-radius: 50%; padding: 1px 6px; font-size: 10px; margin-left: 6px; border: 1px solid white; }
 
+        /* Match Card */
         .match-card { background: var(--card); margin: 12px 15px; border-radius: 15px; padding: 18px; border: 1px solid #1c3631; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transform: translateY(10px); transition: 0.4s ease-out; cursor: pointer; }
         .match-card.show { opacity: 1; transform: translateY(0); }
         .m-category { font-size: 11px; color: var(--text); margin-bottom: 12px; font-weight: 600; text-transform: uppercase; }
@@ -47,13 +50,27 @@
         .team-info img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ffffff11; margin-bottom: 8px; background: #000; object-fit: cover; }
         .team-info div { font-weight: bold; font-size: 14px; }
         .vs-divider { font-weight: 800; font-size: 20px; color: white; }
-        
         .live-tag { background: #e50914; color: white; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; animation: blink 1.2s infinite; }
         .live-tag::before { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
         @keyframes blink { 50% { opacity: 0.5; } }
-        
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .watch-btn { background: var(--accent); color: black; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+
+        /* --- POPUP ADS (BOTTOM SLIDE) --- */
+        #bottom-popup-ad {
+            position: fixed; bottom: -100%; left: 0; width: 100%; background: #fff;
+            z-index: 1000; transition: bottom 0.5s ease-in-out; border-top-left-radius: 20px; border-top-right-radius: 20px;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.5); padding: 10px;
+        }
+        #bottom-popup-ad.active { bottom: 0; }
+        .close-popup { position: absolute; top: -15px; right: 20px; background: #e50914; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 2px solid white; }
+
+        /* --- FULL SCREEN AD OVERLAY (INTERSTITIAL) --- */
+        #interstitial-ad {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg);
+            z-index: 50000; display: none; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .ad-timer { position: absolute; top: 20px; right: 20px; color: white; font-weight: bold; }
 
         /* --- HYBRID SHARE OVERLAY --- */
         #share-overlay { 
@@ -76,13 +93,10 @@
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
         .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         video { width: 100%; height: auto; max-height: 100%; }
-        .gesture-zone { position: absolute; top: 0; width: 40%; height: 100%; z-index: 20005; }
-        #left-zone { left: 0; } #right-zone { right: 0; }
         .p-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); display: flex; flex-direction: column; justify-content: space-between; z-index: 20010; transition: 0.4s; pointer-events: none; }
         .p-ui.hide { opacity: 0; }
         .p-top, .p-mid i, .p-bottom { pointer-events: auto; }
         .p-top { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); }
-        .p-mid { display: flex; justify-content: center; gap: 60px; font-size: 45px; color: white; align-items: center; }
         .p-bottom { padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -99,13 +113,38 @@
     <div class="loader-dot"></div>
 </div>
 
+<div id="interstitial-ad">
+    <div class="ad-timer" id="ad-timer-text">Ad closing in 5s...</div>
+    <div style="width: 100%; max-width: 400px; padding: 20px; color: black;">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1895449179923280"
+             data-ad-slot="6999248761"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+    <button class="btn btn-light mt-4 rounded-pill px-5" id="close-ad-btn" style="display:none;" onclick="hideInterstitial()">Close Ad</button>
+</div>
+
+<div id="bottom-popup-ad">
+    <div class="close-popup" onclick="togglePopupAd(false)">×</div>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-1895449179923280"
+         data-ad-slot="6999248761"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
 <div id="app-view">
     <div class="topbar">
         <h4>SportSync Live</h4>
         <div class="top-icons">
-            <i class="fa-solid fa-share-nodes me-3" onclick="openShareSheet()"></i>
-            <i class="fa-solid fa-rotate-right me-3" onclick="refreshData()"></i>
-            <i class="fa-solid fa-magnifying-glass" onclick="toggleSearch()"></i>
+            <i class="fa-solid fa-share-nodes me-3" onclick="triggerAdBeforeAction('share')"></i>
+            <i class="fa-solid fa-rotate-right me-3" onclick="triggerAdBeforeAction('refresh')"></i>
+            <i class="fa-solid fa-magnifying-glass" onclick="triggerAdBeforeAction('search')"></i>
         </div>
     </div>
 
@@ -118,6 +157,7 @@
         <div class="f-btn" onclick="filterData('Cricket', this)">Cricket <span class="badge-count" id="c-cricket">0</span></div>
         <div class="f-btn" onclick="filterData('IPL', this)">IPL <span class="badge-count" id="c-ipl">0</span></div>
     </div>
+
     <div id="match-list"></div>
 </div>
 
@@ -142,12 +182,9 @@
 <div id="player-layer">
     <div class="v-wrap" id="v-container">
         <video id="main-video" playsinline></video>
-        <div id="left-zone" class="gesture-zone"></div><div id="right-zone" class="gesture-zone"></div>
-        <div id="bright-box" style="position:absolute; left:20px; top:50%; display:none; flex-direction:column-reverse; align-items:center; background:rgba(0,0,0,0.6); height:160px; width:45px; border-radius:30px; padding:12px; z-index:20020;"><div class="bar-fill" id="b-fill" style="width:6px; background:var(--accent); height:0%; transition:0.1s;"></div><i class="fa-solid fa-sun mt-2"></i></div>
-        <div id="vol-box" style="position:absolute; right:20px; top:50%; display:none; flex-direction:column-reverse; align-items:center; background:rgba(0,0,0,0.6); height:160px; width:45px; border-radius:30px; padding:12px; z-index:20020;"><div class="bar-fill" id="v-fill" style="width:6px; background:var(--accent); height:0%; transition:0.1s;"></div><i class="fa-solid fa-volume-high mt-2"></i></div>
         <div class="p-ui" id="player-controls">
-            <div class="p-top"><div class="d-flex align-items-center"><i class="fa-solid fa-arrow-left me-3" onclick="closePlayer()"></i><span id="video-title" style="font-weight: 600;">Stream</span></div><i class="fa-solid fa-lock-open" id="lock-icon" onclick="toggleLock(event)"></i></div>
-            <div class="p-mid"><i class="fa-solid fa-rotate-left" onclick="skip(-10, event)"></i><i class="fa-solid fa-play" id="play-pause-btn" onclick="togglePlay(event)"></i><i class="fa-solid fa-rotate-right" onclick="skip(10, event)"></i></div>
+            <div class="p-top"><div class="d-flex align-items-center"><i class="fa-solid fa-arrow-left me-3" onclick="closePlayer()"></i><span id="video-title">Stream</span></div></div>
+            <div class="p-mid text-center" style="pointer-events: auto;"><i class="fa-solid fa-play fa-3x" id="play-pause-btn" onclick="togglePlay(event)"></i></div>
             <div class="p-bottom"><input type="range" id="seek-slider" value="0" style="width:100%; accent-color:#f7d417;"><div class="d-flex justify-content-between mt-2" style="font-size: 12px;"><span id="time-label">00:00 / 00:00</span><i class="fa-solid fa-expand" onclick="toggleFS(event)"></i></div></div>
         </div>
     </div>
@@ -168,32 +205,155 @@
     const video = document.getElementById('main-video');
     const playerLayer = document.getElementById('player-layer');
     const pUI = document.getElementById('player-controls');
-    let hls = null, isLocked = false, brightness = 1.0;
+    let hls = null, nextAction = null, currentStreamData = null;
 
-    // --- UPDATED FIXED SHARE LOGIC ---
-    function openShareSheet() { document.getElementById('share-overlay').style.display = 'block'; }
-    function closeShareSheet() { document.getElementById('share-overlay').style.display = 'none'; }
+    // --- AD LOGIC ---
+    function triggerAdBeforeAction(action, data = null) {
+        nextAction = action;
+        currentStreamData = data;
+        showInterstitial();
+    }
 
-    function triggerNativeShare() {
-        if (navigator.share) {
-            // బ్రౌజర్ సపోర్ట్ ఉంటే నేటివ్ షేర్ షీట్ ఓపెన్ చేస్తుంది (Most Apps)
-            navigator.share({
-                title: 'SportSync Live',
-                text: SHARE_MSG,
-                url: APP_LINK
-            }).catch(() => fallbackCopy());
+    function showInterstitial() {
+        const adLayer = document.getElementById('interstitial-ad');
+        const timerText = document.getElementById('ad-timer-text');
+        const closeBtn = document.getElementById('close-ad-btn');
+        adLayer.style.display = 'flex';
+        closeBtn.style.display = 'none';
+        
+        let count = 5;
+        timerText.innerText = `Ad closing in ${count}s...`;
+        
+        const interval = setInterval(() => {
+            count--;
+            timerText.innerText = `Ad closing in ${count}s...`;
+            if (count <= 0) {
+                clearInterval(interval);
+                timerText.innerText = "Ad ready to close.";
+                closeBtn.style.display = 'block';
+            }
+        }, 1000);
+    }
+
+    function hideInterstitial() {
+        document.getElementById('interstitial-ad').style.display = 'none';
+        executeNextAction();
+    }
+
+    function executeNextAction() {
+        if (nextAction === 'share') openShareSheet();
+        if (nextAction === 'refresh') refreshData();
+        if (nextAction === 'search') toggleSearch();
+        if (nextAction === 'play') startStreaming(currentStreamData.url, currentStreamData.title);
+        nextAction = null;
+    }
+
+    function togglePopupAd(show) {
+        const popup = document.getElementById('bottom-popup-ad');
+        show ? popup.classList.add('active') : popup.classList.remove('active');
+    }
+
+    // --- APP UI LOGIC ---
+    window.onload = () => { 
+        setTimeout(() => { 
+            document.getElementById('splash-screen').style.opacity = '0'; 
+            setTimeout(() => { 
+                document.getElementById('splash-screen').style.display = 'none'; 
+                renderUI(allMatches); 
+                setTimeout(() => togglePopupAd(true), 2000); // Show popup after 2s
+            }, 500); 
+        }, 3000); 
+    };
+
+    function renderUI(data) { 
+        document.getElementById('match-list').innerHTML = data.map((m, idx) => `
+            <div class="match-card" onclick="openLinkSelection(${idx})">
+                <div class="m-category">${m.cat} | ${m.title}</div>
+                <div class="teams-container">
+                    <div class="team-info"><img src="${m.t1_img}"><div>${m.t1}</div></div>
+                    <div class="vs-divider">VS</div>
+                    <div class="team-info"><img src="${m.t2_img}"><div>${m.t2}</div></div>
+                </div>
+                <div class="footer-row">
+                    <div class="live-tag">Live</div>
+                    <button class="watch-btn">▶ WATCH NOW</button>
+                </div>
+            </div>`).join(''); 
+        setTimeout(() => document.querySelectorAll('.match-card').forEach(c => c.classList.add('show')), 100); 
+        updateCounts(); 
+    }
+
+    function openLinkSelection(index) { 
+        const match = allMatches[index]; 
+        document.getElementById('selection-title').innerText = match.t1 + " vs " + match.t2; 
+        document.getElementById('link-list-area').innerHTML = match.links.map(link => `
+            <div class="link-row" onclick="triggerAdBeforeAction('play', {url:'${link.url}', title:'${link.name}'})" style="background:var(--card); margin-bottom:10px; padding:15px; border-radius:12px; display:flex; align-items:center; border:1px solid #1c3631;">
+                <i class="fa-solid fa-play me-3" style="color:var(--accent);"></i>
+                <span class="link-text">${link.name}</span>
+            </div>`).join(''); 
+        document.getElementById('link-selection-overlay').style.display = 'block'; 
+    }
+
+    function startStreaming(url, title) {
+        closeLinkOverlay();
+        playerLayer.style.display = 'block';
+        document.getElementById('video-title').innerText = title;
+        if (Hls.isSupported() && url.includes('.m3u8')) {
+            if(hls) hls.destroy();
+            hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
         } else {
-            fallbackCopy();
+            video.src = url;
+            video.play().catch(()=>{});
         }
     }
 
-    function fallbackCopy() {
-        // WebView ఎర్రర్ ఇస్తే లింక్ ని క్లిప్‌బోర్డ్ కి కాపీ చేస్తుంది
-        navigator.clipboard.writeText(SHARE_MSG);
-        alert("Sharing apps not reachable. Link copied to clipboard! You can now paste it anywhere.");
-        closeShareSheet();
+    function closePlayer() { playerLayer.style.display = 'none'; video.pause(); video.src = ""; }
+    function closeLinkOverlay() { document.getElementById('link-selection-overlay').style.display = 'none'; }
+    function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); updatePlayBtn(); }
+    function updatePlayBtn() { document.getElementById('play-pause-btn').className = video.paused ? 'fa-solid fa-play fa-3x' : 'fa-solid fa-pause fa-3x'; }
+    function toggleSearch() { const s = document.getElementById('searchBox'); s.style.display = (s.style.display === 'block') ? 'none' : 'block'; }
+    function openShareSheet() { document.getElementById('share-overlay').style.display = 'block'; }
+    function closeShareSheet() { document.getElementById('share-overlay').style.display = 'none'; }
+    
+    function refreshData() { 
+        document.getElementById('match-list').innerHTML = "<div class='text-center mt-5'><div class='spinner-border text-warning'></div></div>"; 
+        setTimeout(() => renderUI(allMatches), 800); 
     }
 
+    function filterData(cat, btn) { 
+        document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); 
+        btn.classList.add('active'); 
+        renderUI(cat === 'All' ? allMatches : allMatches.filter(m => m.cat === cat)); 
+    }
+
+    function searchFn() { 
+        const val = document.getElementById('searchInput').value.toLowerCase(); 
+        renderUI(allMatches.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); 
+    }
+
+    function updateCounts() { 
+        document.getElementById('c-all').innerText = allMatches.length; 
+        document.getElementById('c-cricket').innerText = allMatches.filter(m => m.cat === 'Cricket').length; 
+        document.getElementById('c-ipl').innerText = allMatches.filter(m => m.cat === 'IPL').length; 
+    }
+
+    video.addEventListener('timeupdate', () => {
+        document.getElementById('time-label').innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+        document.getElementById('seek-slider').value = (video.currentTime / video.duration) * 100 || 0;
+    });
+
+    function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s / 60); const sec = Math.floor(s % 60); return `${m < 10 ? '0'+m : m}:${sec < 10 ? '0'+sec : sec}`; }
+    function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
+
+    function triggerNativeShare() {
+        if (navigator.share) {
+            navigator.share({ title: 'SportSync Live', text: SHARE_MSG, url: APP_LINK }).catch(() => fallbackCopy());
+        } else { fallbackCopy(); }
+    }
+    function fallbackCopy() { navigator.clipboard.writeText(SHARE_MSG); alert("Link copied!"); closeShareSheet(); }
     function shareVia(p) {
         const msg = encodeURIComponent(SHARE_MSG);
         if(p==='wa') window.location.href = `whatsapp://send?text=${msg}`;
@@ -201,33 +361,6 @@
         if(p==='fb') window.location.href = `https://www.facebook.com/sharer/sharer.php?u=${APP_LINK}`;
         closeShareSheet();
     }
-
-    // UI logic
-    window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('splash-screen').style.display = 'none'; renderUI(allMatches); }, 500); }, 3000); };
-    function renderUI(data) { document.getElementById('match-list').innerHTML = data.map((m, idx) => `<div class="match-card" onclick="openLinkSelection(${idx})"><div class="m-category">${m.cat} | ${m.title}</div><div class="teams-container"><div class="team-info"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-divider">VS</div><div class="team-info"><img src="${m.t2_img}"><div>${m.t2}</div></div></div><div class="footer-row"><div class="live-tag">Live</div><button class="watch-btn">▶ WATCH NOW</button></div></div>`).join(''); setTimeout(() => document.querySelectorAll('.match-card').forEach(c => c.classList.add('show')), 100); updateCounts(); }
-    function openLinkSelection(index) { const match = allMatches[index]; document.getElementById('selection-title').innerText = match.t1 + " vs " + match.t2; document.getElementById('link-list-area').innerHTML = match.links.map(link => `<div class="link-row" onclick="playStream('${link.url}', '${link.name}')" style="background:var(--card); margin-bottom:10px; padding:15px; border-radius:12px; display:flex; align-items:center; border:1px solid #1c3631;"><i class="fa-solid fa-play me-3" style="color:var(--accent);"></i><span class="link-text">${link.name}</span></div>`).join(''); document.getElementById('link-selection-overlay').style.display = 'block'; }
-    function closeLinkOverlay() { document.getElementById('link-selection-overlay').style.display = 'none'; }
-    function playStream(url, title) { closeLinkOverlay(); playerLayer.style.display = 'block'; document.getElementById('video-title').innerText = title; if (Hls.isSupported() && url.includes('.m3u8')) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } else { video.src = url; video.play().catch(()=>{}); } showUI(); }
-    function closePlayer() { playerLayer.style.display = 'none'; video.pause(); video.src = ""; }
-    function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); updatePlayBtn(); }
-    function updatePlayBtn() { document.getElementById('play-pause-btn').className = video.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause'; }
-    function skip(v, e) { e.stopPropagation(); video.currentTime += v; }
-    function toggleSearch() { const s = document.getElementById('searchBox'); s.style.display = (s.style.display === 'block') ? 'none' : 'block'; if(s.style.display === 'block') document.getElementById('searchInput').focus(); }
-    function filterData(cat, btn) { document.getElementById('searchBox').style.display='none'; document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderUI(cat === 'All' ? allMatches : allMatches.filter(m => m.cat === cat)); }
-    function refreshData() { document.getElementById('searchBox').style.display='none'; document.getElementById('match-list').innerHTML = "<div class='text-center mt-5'><div class='spinner-border text-warning'></div></div>"; setTimeout(() => renderUI(allMatches), 800); }
-    function searchFn() { const val = document.getElementById('searchInput').value.toLowerCase(); renderUI(allMatches.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); }
-    function updateCounts() { document.getElementById('c-all').innerText = allMatches.length; document.getElementById('c-cricket').innerText = allMatches.filter(m => m.cat === 'Cricket').length; document.getElementById('c-ipl').innerText = allMatches.filter(m => m.cat === 'IPL').length; }
-    let startY, startVal;
-    document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startVal = brightness; document.getElementById('bright-box').style.display = 'flex'; });
-    document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let delta = (startY - e.touches[0].pageY) / 150; brightness = Math.min(Math.max(startVal + delta, 0), 1); document.getElementById('br-mask').style.opacity = 1 - brightness; document.getElementById('b-fill').style.height = (brightness * 100) + '%'; });
-    document.getElementById('right-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startVal = video.volume; document.getElementById('vol-box').style.display = 'flex'; });
-    document.getElementById('right-zone').addEventListener('touchmove', e => { if(isLocked) return; let delta = (startY - e.touches[0].pageY) / 150; video.volume = Math.min(Math.max(startVal + delta, 0), 1); document.getElementById('v-fill').style.height = (video.volume * 100) + '%'; });
-    document.querySelectorAll('.gesture-zone').forEach(zone => { zone.addEventListener('touchend', () => { document.querySelectorAll('.gesture-box').forEach(b => b.style.display = 'none'); }); zone.addEventListener('click', () => { if(!isLocked) pUI.classList.toggle('hide'); showUI(); }); });
-    function showUI() { pUI.classList.remove('hide'); clearTimeout(window.uTimer); if(!video.paused) window.uTimer = setTimeout(() => pUI.classList.add('hide'), 3500); }
-    function toggleLock(e) { e.stopPropagation(); isLocked = !isLocked; document.getElementById('lock-icon').className = isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open'; pUI.classList.toggle('hide', isLocked); }
-    video.addEventListener('timeupdate', () => { document.getElementById('time-label').innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`; document.getElementById('seek-slider').value = (video.currentTime / video.duration) * 100 || 0; });
-    function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s / 60); const sec = Math.floor(s % 60); return `${m < 10 ? '0'+m : m}:${sec < 10 ? '0'+sec : sec}`; }
-    function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
 </script>
 </body>
 </html>
