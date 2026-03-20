@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Star Sports Pro - Live</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <style>
+        :root { --bg: #051412; --card: #0e2522; --accent: #f7d417; --text: #bfc9c7; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; user-select: none; }
+
+        /* Topbar & Icons */
+        .topbar { background: var(--bg); padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .topbar h4 { font-size: 20px; font-weight: bold; margin: 0; }
+        .top-icons i { font-size: 18px; cursor: pointer; transition: 0.2s; padding: 5px; }
+        .top-icons i:active { color: var(--accent); transform: scale(0.9) rotate(15deg); }
+
+        /* Search Box */
+        .search-container { display: none; padding: 10px 15px; background: var(--bg); }
+        #searchInput { width: 100%; padding: 10px 18px; border-radius: 25px; border: 1px solid #1c3631; background: var(--card); color: white; outline: none; }
+
+        /* Filter Buttons */
+        .filters { display: flex; padding: 5px 15px 15px; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+        .f-btn { background: var(--card); border: 1.2px solid #1c3631; color: white; padding: 5px 15px; border-radius: 25px; font-size: 13px; white-space: nowrap; cursor: pointer; display: flex; align-items: center; }
+        .f-btn.active { border-color: var(--accent); background: #1c3a35; }
+        .badge-count { background: #e50914; border-radius: 50%; padding: 1px 6px; font-size: 10px; margin-left: 6px; border: 1px solid white; }
+
+        /* Match Card Styling */
+        .match-card { background: var(--card); margin: 12px 15px; border-radius: 15px; padding: 18px; border: 1px solid #1c3631; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transform: translateY(10px); transition: 0.4s ease-out; }
+        .match-card.show { opacity: 1; transform: translateY(0); }
+        .m-category { font-size: 12px; color: var(--text); margin-bottom: 15px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .teams-container { display: flex; justify-content: space-between; align-items: center; text-align: center; }
+        .team-info img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ffffff11; margin-bottom: 8px; background: #000; object-fit: cover; }
+        .team-info div { font-weight: bold; font-size: 14px; }
+        .vs-divider { font-weight: 800; font-size: 20px; color: white; }
+        
+        .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .live-indicator { background: #e50914; font-size: 11px; padding: 3px 10px; border-radius: 5px; font-weight: bold; animation: blink 1.2s infinite; }
+        @keyframes blink { 50% { opacity: 0.4; } }
+        .watch-btn { background: var(--accent); color: black; border: none; padding: 7px 18px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+
+        /* Refresh Loading */
+        #loading-view { display: none; text-align: center; padding: 50px; }
+        .spinner-custom { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Player UI */
+        #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; }
+        .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        video { width: 100%; height: auto; max-height: 100%; }
+
+        /* Controls */
+        .p-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); display: flex; flex-direction: column; justify-content: space-between; z-index: 10001; transition: 0.4s; }
+        .p-ui.hide { opacity: 0; pointer-events: none; }
+        .p-top { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); }
+        .p-mid { display: flex; justify-content: center; gap: 60px; font-size: 45px; color: white; align-items: center; }
+        .p-bottom { padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
+        #seek-slider { width: 100%; accent-color: var(--accent); }
+
+        /* Gestures UI */
+        .gesture-box { position: absolute; top: 50%; transform: translateY(-50%); width: 45px; height: 160px; background: rgba(0,0,0,0.6); border-radius: 30px; display: none; flex-direction: column-reverse; align-items: center; padding: 12px; z-index: 10002; }
+        .bar-fill { width: 6px; background: var(--accent); border-radius: 3px; height: 0%; transition: 0.1s; }
+        #br-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; pointer-events: none; z-index: 9999; opacity: 0; }
+    </style>
+</head>
+<body>
+
+<div id="br-mask"></div>
+
+<div id="app-view">
+    <div class="topbar">
+        <h4>Star Sports</h4>
+        <div class="top-icons">
+            <i class="fa-solid fa-share-nodes me-3" onclick="shareApp()"></i>
+            <i class="fa-solid fa-rotate-right me-3" id="refresh-icon" onclick="refreshData()"></i>
+            <i class="fa-solid fa-magnifying-glass" onclick="toggleSearch()"></i>
+        </div>
+    </div>
+
+    <div class="search-container" id="searchBox">
+        <input type="text" id="searchInput" placeholder="Search matches..." onkeyup="searchFn()">
+    </div>
+    
+    <div class="filters">
+        <div class="f-btn active" onclick="filterData('All', this)">All <span class="badge-count" id="c-all">0</span></div>
+        <div class="f-btn" onclick="filterData('Cricket', this)">Cricket <span class="badge-count" id="c-cricket">0</span></div>
+        <div class="f-btn" onclick="filterData('IPL', this)">IPL <span class="badge-count" id="c-ipl">0</span></div>
+    </div>
+
+    <div id="loading-view">
+        <div class="spinner-custom"></div>
+        <p class="mt-3 text-secondary">Refreshing data...</p>
+    </div>
+
+    <div id="match-list">
+        </div>
+</div>
+
+<div id="player-layer">
+    <div class="v-wrap" id="gesture-area">
+        <video id="main-video" playsinline></video>
+        <div id="bright-box" class="gesture-box"><div class="bar-fill" id="b-fill"></div><i class="fa-solid fa-sun mt-2"></i></div>
+        <div id="vol-box" class="gesture-box"><div class="bar-fill" id="v-fill"></div><i class="fa-solid fa-volume-high mt-2"></i></div>
+
+        <div class="p-ui" id="player-controls">
+            <div class="p-top">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-arrow-left me-3" onclick="closePlayer()"></i>
+                    <span id="video-title" style="font-weight: 600;">Live Stream</span>
+                </div>
+                <div class="d-flex gap-4">
+                    <i class="fa-solid fa-lock-open" id="lock-icon" onclick="toggleLock(event)"></i>
+                </div>
+            </div>
+            <div class="p-mid">
+                <i class="fa-solid fa-rotate-left" style="font-size: 30px;" onclick="skip(-10, event)"></i>
+                <i class="fa-solid fa-play" id="play-pause-btn" onclick="togglePlay(event)"></i>
+                <i class="fa-solid fa-rotate-right" style="font-size: 30px;" onclick="skip(10, event)"></i>
+            </div>
+            <div class="p-bottom">
+                <input type="range" id="seek-slider" value="0">
+                <div class="d-flex justify-content-between mt-2" style="font-size: 12px; color: #ddd;">
+                    <span id="time-label">00:00 / 00:00</span>
+                    <i class="fa-solid fa-expand" onclick="toggleFS(event)"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const allMatches = [
+        {
+            cat: "Cricket",
+            title: "T20 International",
+            t1: "New Zealand",
+            t1_img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg",
+            t2: "South Africa",
+            t2_img: "https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg",
+            url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+        },
+        {
+            cat: "IPL",
+            title: "T20 Match 01",
+            t1: "RCB",
+            t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Royal_Challengers_Bangalore_2020_Logo.svg/1200px-Royal_Challengers_Bangalore_2020_Logo.svg.png",
+            t2: "SRH",
+            t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/1200px-Sunrisers_Hyderabad.svg.png",
+            url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+        }
+    ];
+
+    const video = document.getElementById('main-video');
+    const playerLayer = document.getElementById('player-layer');
+    const pUI = document.getElementById('player-controls');
+    const list = document.getElementById('match-list');
+    const loading = document.getElementById('loading-view');
+    let hls = null;
+    let isLocked = false;
+    let brightness = 1.0;
+
+    // --- రిఫ్రెష్ ఫంక్షన్ (Refresh Logic) ---
+    function refreshData() {
+        // UI క్లియర్ చేయడం
+        list.style.display = 'none';
+        loading.style.display = 'block';
+        
+        // 1.5 సెకన్ల తర్వాత డేటా మళ్ళీ లోడ్ చేయడం
+        setTimeout(() => {
+            renderUI(allMatches);
+            loading.style.display = 'none';
+            list.style.display = 'block';
+            
+            // యాడ్ అయిన కార్డ్స్‌కి యానిమేషన్ యాడ్ చేయడం
+            const cards = document.querySelectorAll('.match-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('show');
+                }, index * 150);
+            });
+        }, 1500);
+    }
+
+    function renderUI(data) {
+        list.innerHTML = data.map(m => `
+            <div class="match-card">
+                <div class="m-category">${m.cat} | ${m.title}</div>
+                <div class="teams-container">
+                    <div class="team-info"><img src="${m.t1_img}"><div>${m.t1}</div></div>
+                    <div class="vs-divider">VS</div>
+                    <div class="team-info"><img src="${m.t2_img}"><div>${m.t2}</div></div>
+                </div>
+                <div class="footer-row">
+                    <div class="live-indicator">● LIVE</div>
+                    <button class="watch-btn" onclick="playStream('${m.url}', '${m.t1} vs ${m.t2}')">▶ WATCH NOW</button>
+                </div>
+            </div>
+        `).join('');
+        updateCounts();
+    }
+
+    // --- మిగతా ఫంక్షన్లు (Filters, Search, Player) ---
+    function filterData(cat, btn) {
+        document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filtered = cat === 'All' ? allMatches : allMatches.filter(m => m.cat === cat);
+        renderUI(filtered);
+        const cards = document.querySelectorAll('.match-card');
+        cards.forEach(c => c.classList.add('show'));
+    }
+
+    function searchFn() {
+        const val = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = allMatches.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val));
+        renderUI(filtered);
+        document.querySelectorAll('.match-card').forEach(c => c.classList.add('show'));
+    }
+
+    function toggleSearch() {
+        const s = document.getElementById('searchBox');
+        s.style.display = s.style.display === 'block' ? 'none' : 'block';
+        if(s.style.display === 'block') document.getElementById('searchInput').focus();
+    }
+
+    function updateCounts() {
+        document.getElementById('c-all').innerText = allMatches.length;
+        document.getElementById('c-cricket').innerText = allMatches.filter(m => m.cat === 'Cricket').length;
+        document.getElementById('c-ipl').innerText = allMatches.filter(m => m.cat === 'IPL').length;
+    }
+
+    function playStream(url, title) {
+        playerLayer.style.display = 'block';
+        document.getElementById('video-title').innerText = title;
+        if (Hls.isSupported()) {
+            if(hls) hls.destroy();
+            hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+        } else { video.src = url; video.play(); }
+        showUI();
+    }
+
+    function closePlayer() { playerLayer.style.display = 'none'; video.pause(); video.src = ""; }
+    function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); updatePlayBtn(); }
+    function updatePlayBtn() { document.getElementById('play-pause-btn').className = video.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause'; }
+    function skip(v, e) { e.stopPropagation(); video.currentTime += v; }
+
+    // Gestures Logic
+    let startY, startVal, isLeft;
+    const area = document.getElementById('gesture-area');
+    area.addEventListener('touchstart', e => {
+        if(isLocked) return;
+        startY = e.touches[0].pageY;
+        isLeft = e.touches[0].pageX < window.innerWidth / 2;
+        startVal = isLeft ? brightness : video.volume;
+        document.getElementById(isLeft ? 'bright-box' : 'vol-box').style.display = 'flex';
+    });
+    area.addEventListener('touchmove', e => {
+        if(isLocked) return;
+        const delta = (startY - e.touches[0].pageY) / 200;
+        const newVal = Math.min(Math.max(startVal + delta, 0), 1);
+        if(isLeft) {
+            brightness = newVal;
+            document.getElementById('br-mask').style.opacity = 1 - newVal;
+            document.getElementById('b-fill').style.height = (newVal * 100) + '%';
+        } else {
+            video.volume = newVal;
+            document.getElementById('v-fill').style.height = (newVal * 100) + '%';
+        }
+    });
+    area.addEventListener('touchend', () => { document.querySelectorAll('.gesture-box').forEach(b => b.style.display = 'none'); });
+
+    // Tap Handling
+    let lastTap = 0;
+    area.addEventListener('click', e => {
+        const now = Date.now();
+        if (now - lastTap < 300) { video.currentTime += e.pageX < window.innerWidth / 2 ? -10 : 10; } 
+        else { if(!isLocked) pUI.classList.toggle('hide'); }
+        lastTap = now;
+        showUI();
+    });
+
+    function showUI() {
+        pUI.classList.remove('hide');
+        clearTimeout(window.uTimer);
+        if(!video.paused) window.uTimer = setTimeout(() => pUI.classList.add('hide'), 3500);
+    }
+
+    function toggleLock(e) {
+        e.stopPropagation();
+        isLocked = !isLocked;
+        document.getElementById('lock-icon').className = isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+        pUI.classList.toggle('hide', isLocked);
+    }
+
+    video.addEventListener('timeupdate', () => {
+        const cur = formatTime(video.currentTime);
+        const dur = formatTime(video.duration);
+        document.getElementById('time-label').innerText = `${cur} / ${dur}`;
+        document.getElementById('seek-slider').value = (video.currentTime / video.duration) * 100 || 0;
+    });
+
+    function formatTime(s) {
+        if(isNaN(s)) return "00:00";
+        const m = Math.floor(s / 60); const sec = Math.floor(s % 60);
+        return `${m < 10 ? '0'+m : m}:${sec < 10 ? '0'+sec : sec}`;
+    }
+
+    function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) area.requestFullscreen(); else document.exitFullscreen(); }
+    function shareApp() { if(navigator.share) navigator.share({ title: 'Star Sports Live', url: window.location.href }); }
+
+    // Initial Load
+    window.onload = refreshData;
+</script>
+</body>
+</html>
