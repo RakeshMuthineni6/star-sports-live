@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SportSync Live</title>
     
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+    
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1895449179923280" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -37,8 +39,7 @@
         .badge-count { background: #e50914; border-radius: 50%; padding: 1px 6px; font-size: 10px; margin-left: 6px; border: 1px solid white; }
 
         /* MATCH CARD */
-        .match-card { background: var(--card); margin: 12px 15px; border-radius: 15px; padding: 18px; border: 1px solid #1c3631; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transform: translateY(10px); transition: 0.4s ease-out; cursor: pointer; }
-        .match-card.show { opacity: 1; transform: translateY(0); }
+        .match-card { background: var(--card); margin: 12px 15px; border-radius: 15px; padding: 18px; border: 1px solid #1c3631; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
         .m-card-img { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; border: 1px solid #1c3631; }
         .teams-container { display: flex; justify-content: space-between; align-items: center; text-align: center; }
         .team-info img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ffffff11; margin-bottom: 8px; background: #000; object-fit: cover; }
@@ -50,15 +51,16 @@
 
         /* ADMIN PANEL */
         #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 30000; padding: 20px; overflow-y: auto; }
-        .admin-form label { color: var(--accent); font-size: 13px; margin-top: 15px; display: block; font-weight: bold; text-transform: uppercase; }
-        .form-control, .form-select { background: #0e2522; border: 1px solid #1c3631; color: white; font-size: 14px; margin-top: 5px; }
         .admin-item { background: #0e2522; padding: 12px; border-radius: 8px; border: 1px solid #1c3631; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .link-input-group { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 8px; border: 1px solid #1c3631; }
+        .link-input-group { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 8px; border: 1px solid #1c3631; position: relative; }
+        .del-link-btn { position: absolute; top: -10px; right: -5px; background: #ff4444; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; border: none; display: flex; align-items: center; justify-content: center; z-index: 5; }
+        .form-control, .form-select { background: #0e2522; border: 1px solid #1c3631; color: white; font-size: 14px; margin-top: 5px; }
+        label { color: var(--accent); font-size: 12px; margin-top: 12px; font-weight: bold; }
 
         /* PLAYER */
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
         .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        video { width: 100%; height: auto; max-height: 100%; }
+        video { width: 100%; max-height: 100%; }
         .p-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); display: flex; flex-direction: column; justify-content: space-between; z-index: 20010; transition: 0.4s; pointer-events: none; }
         .p-ui.hide { opacity: 0; }
         .p-top, .p-mid i, .p-bottom { pointer-events: auto; }
@@ -68,9 +70,26 @@
         .gesture-box { position: absolute; top: 50%; transform: translateY(-50%); width: 45px; height: 160px; background: rgba(0,0,0,0.6); border-radius: 30px; display: none; flex-direction: column-reverse; align-items: center; padding: 12px; z-index: 20020; pointer-events: none; }
         .bar-fill { width: 6px; background: var(--accent); border-radius: 3px; height: 0%; transition: 0.1s; }
         #br-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; pointer-events: none; z-index: 19999; opacity: 0; }
+        
+        .link-row { background: #0e2522; padding: 15px; margin: 10px; border-radius: 10px; border: 1px solid #1c3631; display: flex; align-items: center; cursor: pointer; }
+
+        /* CUSTOM SHARE SHEET */
+        #share-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 40000; justify-content: center; align-items: flex-end; }
+        #share-sheet { background: #111; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; transform: translateY(100%); transition: transform 0.3s ease-out; }
+        #share-sheet-overlay.show { display: flex; }
+        #share-sheet-overlay.show #share-sheet { transform: translateY(0); }
+        .share-header { display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
+        .share-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none !important; }
+        .share-icon-w { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; }
+        .share-item span { color: #aaa; font-size: 12px; }
+        .sh-ws { background-color: #25D366; }
+        .sh-tg { background-color: #0088cc; }
+        .sh-fb { background-color: #3b5998; }
+        .sh-ms { background-color: #0078FF; }
     </style>
 </head>
-<body>
+<body onclick="hideSearchOnClick(event)">
 
 <div id="br-mask"></div>
 
@@ -84,19 +103,32 @@
     <div class="topbar">
         <h4>SportSync Live</h4>
         <div class="top-icons">
-            <i class="fa-solid fa-share-nodes me-3" onclick="shareApp()"></i>
+            <i class="fa-solid fa-share-nodes me-3" onclick="openShareSheet()"></i>
             <i class="fa-solid fa-rotate-right me-3" onclick="refreshData()"></i>
             <i class="fa-solid fa-magnifying-glass me-3" id="searchTrigger" onclick="toggleSearch(event)"></i>
             <i class="fa-solid fa-lock" onclick="openAdmin()"></i>
         </div>
     </div>
-    <div class="search-container" id="searchBox"><input type="text" id="searchInput" placeholder="Search matches..." onkeyup="searchFn()"></div>
+    <div class="search-container" id="searchBox" onclick="event.stopPropagation()"><input type="text" id="searchInput" placeholder="Search matches..." onkeyup="searchFn()"></div>
+    
     <div class="filters">
         <div class="f-btn active" onclick="filterData('All', this)">All <span class="badge-count" id="c-all">0</span></div>
         <div class="f-btn" onclick="filterData('Cricket', this)">Cricket <span class="badge-count" id="c-cricket">0</span></div>
         <div class="f-btn" onclick="filterData('IPL', this)">IPL <span class="badge-count" id="c-ipl">0</span></div>
     </div>
     <div id="match-list"></div>
+</div>
+
+<div id="share-sheet-overlay" onclick="closeShareSheet()">
+    <div id="share-sheet" onclick="event.stopPropagation()">
+        <div class="share-header"><h5>Share App Via</h5><i class="fa-solid fa-times fs-4" onclick="closeShareSheet()"></i></div>
+        <div class="share-grid">
+            <a href="#" class="share-item" id="share-wa" target="_blank"><div class="share-icon-w sh-ws"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
+            <a href="#" class="share-item" id="share-tg" target="_blank"><div class="share-icon-w sh-tg"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
+            <a href="#" class="share-item" id="share-fb" target="_blank"><div class="share-icon-w sh-fb"><i class="fa-brands fa-facebook-f"></i></div><span>Facebook</span></a>
+            <a href="#" class="share-item" id="share-ms" target="_blank"><div class="share-icon-w sh-ms"><i class="fa-brands fa-facebook-messenger"></i></div><span>Messenger</span></a>
+        </div>
+    </div>
 </div>
 
 <div id="link-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:15000;">
@@ -106,189 +138,100 @@
 
 <div id="admin-panel">
     <div class="d-flex justify-content-between align-items-center mb-3 text-warning"><h4>Admin Dashboard</h4><button class="btn btn-sm btn-danger" onclick="closeAdmin()">X</button></div>
-    <div id="admin-list" class="mb-4"></div>
-    <hr>
-    <h5 id="form-title" class="text-accent">Enter Match Details Below</h5>
+    <div id="admin-items-list" class="mb-3"></div>
+    <hr style="border-color:#333">
+    <h5 id="form-title" class="text-accent">Add New Match</h5>
     <input type="hidden" id="edit-index" value="-1">
-
     <label>Select Category*</label>
     <select id="m-cat" class="form-select"><option value="Cricket">Cricket</option><option value="IPL">IPL</option></select>
-
-    <label>Match Card Image (Upload - Optional)</label>
+    <label>Match Card Image</label>
     <input type="file" id="m-card-file" class="form-control" accept="image/*">
-
     <div class="row">
-        <div class="col-6">
-            <label>Team 1 Name*</label>
-            <input type="text" id="m-t1" class="form-control" placeholder="Ex: RCB">
-            <label>Team 1 Logo*</label>
-            <input type="file" id="m-t1-file" class="form-control" accept="image/*">
-        </div>
-        <div class="col-6">
-            <label>Team 2 Name*</label>
-            <input type="text" id="m-t2" class="form-control" placeholder="Ex: SRH">
-            <label>Team 2 Logo*</label>
-            <input type="file" id="m-t2-file" class="form-control" accept="image/*">
-        </div>
+        <div class="col-6"><label>Team 1 Name*</label><input type="text" id="m-t1" class="form-control"><label>Team 1 Logo</label><input type="file" id="m-t1-file" class="form-control"></div>
+        <div class="col-6"><label>Team 2 Name*</label><input type="text" id="m-t2" class="form-control"><label>Team 2 Logo</label><input type="file" id="m-t2-file" class="form-control"></div>
     </div>
-
     <label>Streaming Links*</label>
-    <div id="links-container">
-        <div class="link-input-group">
-            <div class="row g-2">
-                <div class="col-5">
-                    <label style="margin-top:0; color:#555; font-size:10px;">Server Name*</label>
-                    <input type="text" class="form-control s-name" placeholder="Ex: Server 1" required>
-                </div>
-                <div class="col-7">
-                    <label style="margin-top:0; color:#555; font-size:10px;">Streaming URL*</label>
-                    <input type="text" class="form-control s-url" placeholder="m3u8 link" required>
-                </div>
-            </div>
-        </div>
-    </div>
-    <button class="btn btn-sm btn-outline-warning mt-2 w-100" onclick="addNewLinkField()">+ Add Extra Link</button>
-
-    <label>Schedule Date & Time (Optional)</label>
-    <input type="datetime-local" id="m-time" class="form-control">
-
-    <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="m-live"><label class="form-check-label text-white">Enable Live Mode & Send Notification</label></div>
-    <button class="btn btn-warning w-100 mt-4 fw-bold py-2" onclick="saveMatch()" id="save-btn">ADD MATCH</button>
+    <div id="links-container"><div class="link-input-group"><div class="row g-2"><div class="col-5"><label style="font-size:10px;color:#777;">Server Name</label><input type="text" class="form-control s-name"></div><div class="col-7"><label style="font-size:10px;color:#777;">URL</label><input type="text" class="form-control s-url"></div></div></div></div>
+    <button class="btn btn-sm btn-outline-warning mt-2 w-100" onclick="addNewLinkField()">+ Add More Servers</button>
+    <div class="d-flex align-items-center mt-3"><label class="m-0 me-3">Schedule Match:</label><i class="fa-solid fa-clock text-warning fs-5" onclick="document.getElementById('m-time').showPicker()"></i><input type="datetime-local" id="m-time" style="width:0;height:0;visibility:hidden;"></div>
+    <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="m-live"><label class="form-check-label text-white">Live Match Mode</label></div>
+    <div class="mt-4 d-flex gap-2"><button class="btn btn-warning flex-grow-1 fw-bold" onclick="saveMatch()" id="save-btn">ADD MATCH</button><button class="btn btn-danger fw-bold" id="cancel-edit-btn" style="display:none;" onclick="resetAdminForm()">CANCEL</button></div>
 </div>
 
 <div id="player-layer">
     <div class="v-wrap" id="v-container">
         <video id="main-video" playsinline></video>
-        <div id="left-zone" class="gesture-zone" style="position:absolute;left:0;width:40%;height:100%;z-index:20005;"></div>
-        <div id="right-zone" class="gesture-zone" style="position:absolute;right:0;width:40%;height:100%;z-index:20005;"></div>
+        <div id="left-zone" style="position:absolute;left:0;width:40%;height:100%;z-index:20005;"></div>
+        <div id="right-zone" style="position:absolute;right:0;width:40%;height:100%;z-index:20005;"></div>
         <div id="bright-box" class="gesture-box" style="left:20px;"><div class="bar-fill" id="b-fill"></div><i class="fa-solid fa-sun mt-2"></i></div>
         <div id="vol-box" class="gesture-box" style="right:20px;"><div class="bar-fill" id="v-fill"></div><i class="fa-solid fa-volume-high mt-2"></i></div>
         <div class="p-ui" id="player-controls">
             <div class="p-top"><i class="fa-solid fa-arrow-left" onclick="closePlayer()"></i><span id="v-title">SportSync Live</span><i class="fa-solid fa-lock-open" id="lock-btn" onclick="toggleLock(event)"></i></div>
             <div class="p-mid"><i class="fa-solid fa-rotate-left" onclick="skip(-10, event)"></i><i class="fa-solid fa-play" id="p-play" onclick="togglePlay(event)"></i><i class="fa-solid fa-rotate-right" onclick="skip(10, event)"></i></div>
-            <div class="p-bottom"><input type="range" id="seek-slider" style="width:100%; accent-color:#f7d417;"><div class="d-flex justify-content-between mt-2" style="font-size:12px;"><span id="time-lbl">00:00 / 00:00</span><i class="fa-solid fa-expand" onclick="toggleFS(event)"></i></div></div>
+            <div class="p-bottom"><input type="range" id="seek-slider" min="0" max="100" step="0.1" style="width:100%; accent-color:#f7d417;"><div class="d-flex justify-content-between mt-2" style="font-size:12px;"><span id="time-lbl">00:00 / 00:00</span><i class="fa-solid fa-expand" onclick="toggleFS(event)"></i></div></div>
         </div>
     </div>
 </div>
 
 <script>
-    // కొత్త మ్యాచ్ కార్డ్స్ ఇక్కడ యాడ్ చేశాను
-    let matchDatabase = JSON.parse(localStorage.getItem('matchVault')) || [
-        { cat: "IPL", t1: "RCB", t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Royal_Challengers_Bangalore_2020_Logo.svg/1200px-Royal_Challengers_Bangalore_2020_Logo.svg.png", t2: "SRH", t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/1200px-Sunrisers_Hyderabad.svg.png", links: [{name: "Server 1 HD", url: "https://mxonlive.wuaze.com/AYNAWEB/play.php?id=f064e069-8861-43d5-ac79-828b029a50a1"}], time: "", isLive: true, card: "" },
-        { cat: "Cricket", t1: "India", t1_img: "https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg", t2: "Australia", t2_img: "https://upload.wikimedia.org/wikipedia/commons/8/88/Flag_of_Australia_%28converted%29.svg", links: [{name: "Server 1 HD", url: ""}], time: "2026-03-22T19:30", isLive: false, card: "" },
-        { cat: "IPL", t1: "CSK", t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/1200px-Chennai_Super_Kings_Logo.svg.png", t2: "MI", t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/6/67/Mumbai_Indians_logo.svg/1200px-Mumbai_Indians_logo.svg.png", links: [{name: "Live Link", url: ""}], time: "2026-03-23T19:30", isLive: false, card: "" }
-    ];
+    // Firebase Configuration from your image
+    const firebaseConfig = {
+      apiKey: "AIzaSyDid9PyTmzKwrM0wLERsKIOf2GEdu9tp5M",
+      authDomain: "sportsynclive-3ef2c.firebaseapp.com",
+      projectId: "sportsynclive-3ef2c",
+      storageBucket: "sportsynclive-3ef2c.firebasestorage.app",
+      messagingSenderId: "433748656595",
+      appId: "1:433748656595:web:ae73836ff99dfae723ef26",
+      measurementId: "G-VBQ232G14H"
+    };
 
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+
+    let matchDatabase = JSON.parse(localStorage.getItem('matchVault')) || [];
+    let currentFilter = 'All';
     const video = document.getElementById('main-video');
     let hls = null, isLocked = false, brightness = 1.0;
 
     window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.display='none'; refreshData(); }, 2500); };
 
-    // SEARCH & CLICK OUTSIDE LOGIC
+    function openShareSheet() {
+        const appUrl = "https://play.google.com/store/apps/details?id=starsports.aplitob";
+        const shareText = encodeURIComponent(`Watch Live Cricket & IPL in HD! Download SportSync Live App now:\n${appUrl}`);
+        document.getElementById('share-wa').href = `https://api.whatsapp.com/send?text=${shareText}`;
+        document.getElementById('share-tg').href = `https://telegram.me/share/url?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent('Watch Live Cricket & IPL in HD!')}`;
+        document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}`;
+        document.getElementById('share-ms').href = `fb-messenger://share/?link=${encodeURIComponent(appUrl)}`;
+        document.getElementById('share-sheet-overlay').classList.add('show');
+    }
+    function closeShareSheet() { document.getElementById('share-sheet-overlay').classList.remove('show'); }
+
     function toggleSearch(e) { e.stopPropagation(); let s = document.getElementById('searchBox'); s.style.display = (s.style.display==='block')?'none':'block'; if(s.style.display==='block') document.getElementById('searchInput').focus(); }
-    document.addEventListener('click', e => { let sBox = document.getElementById('searchBox'); if (sBox.style.display === 'block' && !sBox.contains(e.target) && e.target !== document.getElementById('searchTrigger')) sBox.style.display = 'none'; });
-
-    function openAdmin() { if(prompt("Enter Password:") === "Tecra@123") { document.getElementById('admin-panel').style.display='block'; renderAdminList(); } }
-    function closeAdmin() { document.getElementById('admin-panel').style.display='none'; resetForm(); }
-
-    // IMAGE COMPRESSION (సేవ్ ప్రాబ్లం సాల్వ్ చేయడానికి)
-    function compressImg(file) {
-        return new Promise(resolve => {
-            const reader = new FileReader(); reader.readAsDataURL(file);
-            reader.onload = e => {
-                const img = new Image(); img.src = e.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                    canvas.width = 300; canvas.height = 300; ctx.drawImage(img, 0, 0, 300, 300);
-                    resolve(canvas.toDataURL('image/jpeg', 0.6));
-                };
-            };
-        });
-    }
-
-    async function saveMatch() {
-        const idx = parseInt(document.getElementById('edit-index').value);
-        const t1 = document.getElementById('m-t1').value, t2 = document.getElementById('m-t2').value;
-        const linkElements = document.querySelectorAll('.link-input-group');
-        let links = [];
-        linkElements.forEach(el => {
-            const n = el.querySelector('.s-name').value, u = el.querySelector('.s-url').value;
-            if(n && u) links.push({name: n, url: u});
-        });
-
-        if(!t1 || !t2 || links.length === 0) return alert("Required fields missing!");
-
-        const mCard = document.getElementById('m-card-file').files[0];
-        const t1Log = document.getElementById('m-t1-file').files[0];
-        const t2Log = document.getElementById('m-t2-file').files[0];
-
-        const mObj = {
-            cat: document.getElementById('m-cat').value, t1, t2,
-            t1_img: t1Log ? await compressImg(t1Log) : (idx > -1 ? matchDatabase[idx].t1_img : ""),
-            t2_img: t2Log ? await compressImg(t2Log) : (idx > -1 ? matchDatabase[idx].t2_img : ""),
-            card: mCard ? await compressImg(mCard) : (idx > -1 ? matchDatabase[idx].card : ""),
-            links: links, time: document.getElementById('m-time').value, isLive: document.getElementById('m-live').checked
-        };
-
-        if(idx > -1) matchDatabase[idx] = mObj; else matchDatabase.push(mObj);
-        try { localStorage.setItem('matchVault', JSON.stringify(matchDatabase)); alert("Match Saved!"); closeAdmin(); refreshData(); } catch(e) { alert("Memory Full! Delete old matches."); }
-    }
-
-    // -- పాత ప్లేయర్ ఆప్షన్స్ & గెస్చర్స్ --
-    function playStream(url, title) {
-        closeLink(); document.getElementById('player-layer').style.display = 'block'; document.getElementById('v-title').innerText = title;
-        if (Hls.isSupported()) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } 
-        else { video.src = url; video.play(); }
-    }
-
+    function hideSearchOnClick(e) { let s = document.getElementById('searchBox'); if(s.style.display === 'block') s.style.display = 'none'; }
+    function openAdmin() { if(prompt("Password:") === "Tecra@123") { document.getElementById('admin-panel').style.display='block'; renderAdminList(); } }
+    function closeAdmin() { document.getElementById('admin-panel').style.display='none'; resetAdminForm(); }
+    function renderAdminList() { const list = document.getElementById('admin-items-list'); list.innerHTML = matchDatabase.map((m, i) => `<div class="admin-item"><span>${m.t1} vs ${m.t2} (${m.cat})</span><div><i class="fa-solid fa-pen-to-square text-warning me-3" onclick="editMatch(${i})"></i><i class="fa-solid fa-trash text-danger" onclick="deleteMatch(${i})"></i></div></div>`).join(''); }
+    function deleteMatch(i) { if(confirm("Delete?")) { matchDatabase.splice(i, 1); saveVault(); renderAdminList(); refreshData(); } }
+    function editMatch(i) { const m = matchDatabase[i]; document.getElementById('edit-index').value = i; document.getElementById('form-title').innerText = "Edit Match Details"; document.getElementById('save-btn').innerText = "UPDATE MATCH"; document.getElementById('cancel-edit-btn').style.display = "block"; document.getElementById('m-cat').value = m.cat; document.getElementById('m-t1').value = m.t1; document.getElementById('m-t2').value = m.t2; document.getElementById('m-time').value = m.time; document.getElementById('m-live').checked = m.isLive; const container = document.getElementById('links-container'); container.innerHTML = m.links.map((l, idx) => `<div class="link-input-group">${idx > 0 ? `<button class="del-link-btn" onclick="this.parentElement.remove()">×</button>` : ''}<div class="row g-2"><div class="col-5"><input type="text" class="form-control s-name" value="${l.name}"></div><div class="col-7"><input type="text" class="form-control s-url" value="${l.url}"></div></div></div>`).join(''); }
+    function addNewLinkField() { const div = document.createElement('div'); div.className = "link-input-group"; div.innerHTML = `<button class="del-link-btn" onclick="this.parentElement.remove()">×</button><div class="row g-2"><div class="col-5"><input type="text" class="form-control s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control s-url" placeholder="URL"></div></div>`; document.getElementById('links-container').appendChild(div); }
+    async function compressImg(file) { return new Promise(resolve => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = e => { const img = new Image(); img.src = e.target.result; img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = 300; canvas.height = 200; canvas.getContext('2d').drawImage(img, 0, 0, 300, 200); resolve(canvas.toDataURL('image/jpeg', 0.6)); }; }; }); }
+    async function saveMatch() { const idx = parseInt(document.getElementById('edit-index').value); let links = []; document.querySelectorAll('.link-input-group').forEach(g => { const n = g.querySelector('.s-name').value, u = g.querySelector('.s-url').value; if(n && u) links.push({name: n, url: u}); }); if(links.length === 0) return alert("Add Link!"); const mObj = { cat: document.getElementById('m-cat').value, t1: document.getElementById('m-t1').value, t2: document.getElementById('m-t2').value, t1_img: document.getElementById('m-t1-file').files[0] ? await compressImg(document.getElementById('m-t1-file').files[0]) : (idx > -1 ? matchDatabase[idx].t1_img : ""), t2_img: document.getElementById('m-t2-file').files[0] ? await compressImg(document.getElementById('m-t2-file').files[0]) : (idx > -1 ? matchDatabase[idx].t2_img : ""), card: document.getElementById('m-card-file').files[0] ? await compressImg(document.getElementById('m-card-file').files[0]) : (idx > -1 ? matchDatabase[idx].card : ""), links, time: document.getElementById('m-time').value, isLive: document.getElementById('m-live').checked }; if(idx > -1) matchDatabase[idx] = mObj; else matchDatabase.push(mObj); saveVault(); resetAdminForm(); refreshData(); }
+    function saveVault() { localStorage.setItem('matchVault', JSON.stringify(matchDatabase)); }
+    function resetAdminForm() { document.getElementById('edit-index').value = "-1"; document.getElementById('form-title').innerText = "Add New Match"; document.getElementById('save-btn').innerText = "ADD MATCH"; document.getElementById('cancel-edit-btn').style.display = "none"; document.getElementById('m-t1').value = ""; document.getElementById('m-t2').value = ""; document.getElementById('m-time').value = ""; document.getElementById('m-live').checked = false; document.getElementById('links-container').innerHTML = `<div class="link-input-group"><div class="row g-2"><div class="col-5"><input type="text" class="form-control s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control s-url" placeholder="URL"></div></div></div>`; renderAdminList(); }
+    function playStream(url, title) { closeLink(); document.getElementById('player-layer').style.display = 'block'; document.getElementById('v-title').innerText = title; if (Hls.isSupported()) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } else { video.src = url; video.play(); } }
     function closePlayer() { document.getElementById('player-layer').style.display = 'none'; video.pause(); }
     function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); }
     function skip(v, e) { e.stopPropagation(); video.currentTime += v; }
     function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
-
-    // GESTURES
-    let startY, startVal;
-    document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startVal = brightness; document.getElementById('bright-box').style.display='flex'; });
-    document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; brightness = Math.min(Math.max(startVal+d, 0), 1); document.getElementById('br-mask').style.opacity = 1-brightness; document.getElementById('b-fill').style.height = (brightness*100)+'%'; });
-    document.getElementById('right-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startVal = video.volume; document.getElementById('vol-box').style.display='flex'; });
-    document.getElementById('right-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; video.volume = Math.min(Math.max(startVal+d, 0), 1); document.getElementById('v-fill').style.height = (video.volume*100)+'%'; });
-    document.querySelectorAll('.gesture-zone').forEach(z => { 
-        z.addEventListener('touchend', () => { document.querySelectorAll('.gesture-box').forEach(b => b.style.display='none'); });
-        z.addEventListener('click', () => { if(!isLocked) document.getElementById('player-controls').classList.toggle('hide'); });
-    });
     function toggleLock(e) { e.stopPropagation(); isLocked = !isLocked; document.getElementById('lock-btn').className = isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open'; document.getElementById('player-controls').classList.toggle('hide', isLocked); }
-
-    // UI RENDER FUNCTIONS
-    function renderUI(data) {
-        document.getElementById('match-list').innerHTML = data.map((m, i) => `
-            <div class="match-card show" onclick="openLinks(${i})">
-                ${m.card ? `<img src="${m.card}" class="m-card-img">` : ''}
-                <div class="teams-container">
-                    <div class="team-info"><img src="${m.t1_img}"><div>${m.t1}</div></div>
-                    <div class="vs-divider">VS</div>
-                    <div class="team-info"><img src="${m.t2_img}"><div>${m.t2}</div></div>
-                </div>
-                <div class="footer-row">
-                    ${m.isLive ? '<div class="live-tag">Live</div>' : `<div style="font-size:11px;color:var(--accent)">${m.time.replace('T', ' ')}</div>`}
-                    <button class="watch-btn">▶ WATCH NOW</button>
-                </div>
-            </div>
-        `).join('');
-        updateCounts();
-    }
-    
-    function openLinks(i) {
-        const m = matchDatabase[i]; document.getElementById('link-title').innerText = m.t1 + " vs " + m.t2;
-        document.getElementById('link-area').innerHTML = m.links.map(l => `<div class="link-row" onclick="playStream('${l.url}', '${l.name}')"><i class="fa-solid fa-play me-3 text-warning"></i><span>${l.name}</span></div>`).join('');
-        document.getElementById('link-overlay').style.display = 'block';
-    }
+    function filterData(c, btn) { currentFilter = c; document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); refreshData(); }
+    function refreshData() { let filtered = currentFilter === 'All' ? matchDatabase : matchDatabase.filter(m => m.cat === currentFilter); const list = document.getElementById('match-list'); list.innerHTML = filtered.map((m, i) => `<div class="match-card" onclick="openLinksFromFiltered(${matchDatabase.indexOf(m)})">${m.card ? `<img src="${m.card}" class="m-card-img">` : ''}<div class="teams-container"><div class="team-info"><img src="${m.t1_img || ''}"><div>${m.t1}</div></div><div class="vs-divider">VS</div><div class="team-info"><img src="${m.t2_img || ''}"><div>${m.t2}</div></div></div><div class="footer-row">${m.isLive ? '<div class="live-tag">Live</div>' : `<div style="font-size:11px;color:var(--accent)">${m.time.replace('T', ' ')}</div>`}<button class="watch-btn">▶ WATCH NOW</button></div></div>`).join(''); updateCounts(); }
+    function openLinksFromFiltered(realIdx) { const m = matchDatabase[realIdx]; document.getElementById('link-title').innerText = m.t1 + " vs " + m.t2; document.getElementById('link-area').innerHTML = m.links.map(l => `<div class="link-row" onclick="playStream('${l.url}', '${m.t1} vs ${m.t2}')"><i class="fa-solid fa-play me-3 text-warning"></i><span>${l.name}</span></div>`).join(''); document.getElementById('link-overlay').style.display = 'block'; }
     function closeLink() { document.getElementById('link-overlay').style.display = 'none'; }
-    function refreshData() { renderUI(matchDatabase); }
-    function searchFn() { let val = document.getElementById('searchInput').value.toLowerCase(); renderUI(matchDatabase.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); }
-    function filterData(c, b) { document.querySelectorAll('.f-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); renderUI(c==='All'?matchDatabase:matchDatabase.filter(m => m.cat===c)); }
-    function updateCounts() { document.getElementById('c-all').innerText = matchDatabase.length; document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m.cat==='Cricket').length; document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m.cat==='IPL').length; }
-    function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s/60), sc = Math.floor(s%60); return (m<10?'0'+m:m)+":"+(sc<10?'0'+sc:sc); }
-    video.addEventListener('timeupdate', () => { document.getElementById('time-lbl').innerText = formatTime(video.currentTime) + " / " + formatTime(video.duration); document.getElementById('seek-slider').value = (video.currentTime / video.duration) * 100 || 0; });
+    function updateCounts() { document.getElementById('c-all').innerText = matchDatabase.length; document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m.cat === 'Cricket').length; document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m.cat === 'IPL').length; }
+    function searchFn() { let val = document.getElementById('searchInput').value.toLowerCase(); let filtered = matchDatabase.filter(m => (m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val)) && (currentFilter === 'All' || m.cat === currentFilter)); document.getElementById('match-list').innerHTML = filtered.map((m) => `<div class="match-card" onclick="openLinksFromFiltered(${matchDatabase.indexOf(m)})">${m.card ? `<img src="${m.card}" class="m-card-img">` : ''}<div class="teams-container"><div class="team-info"><img src="${m.t1_img || ''}"><div>${m.t1}</div></div><div class="vs-divider">VS</div><div class="team-info"><img src="${m.t2_img || ''}"><div>${m.t2}</div></div></div><div class="footer-row">${m.isLive ? '<div class="live-tag">Live</div>' : `<div style="font-size:11px;color:var(--accent)">${m.time.replace('T', ' ')}</div>`}<button class="watch-btn">▶ WATCH NOW</button></div></div>`).join(''); }
+    let startY, startV; document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startV = brightness; document.getElementById('bright-box').style.display='flex'; }); document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; brightness = Math.min(Math.max(startV+d, 0), 1); document.getElementById('br-mask').style.opacity = 1-brightness; document.getElementById('b-fill').style.height = (brightness*100)+'%'; }); document.getElementById('right-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startV = video.volume; document.getElementById('vol-box').style.display='flex'; }); document.getElementById('right-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; video.volume = Math.min(Math.max(startV+d, 0), 1); document.getElementById('v-fill').style.height = (video.volume*100)+'%'; }); document.querySelectorAll('.gesture-zone').forEach(z => { z.addEventListener('touchend', () => document.querySelectorAll('.gesture-box').forEach(b => b.style.display='none')); z.addEventListener('click', () => { if(!isLocked) document.getElementById('player-controls').classList.toggle('hide'); }); }); const seek = document.getElementById('seek-slider'); seek.addEventListener('input', () => { video.currentTime = (seek.value / 100) * video.duration; }); video.addEventListener('timeupdate', () => { seek.value = (video.currentTime / video.duration) * 100 || 0; document.getElementById('time-lbl').innerText = formatTime(video.currentTime) + " / " + formatTime(video.duration); document.getElementById('p-play').className = video.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause'; }); function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s/60), sc = Math.floor(s%60); return (m<10?'0'+m:m)+":"+(sc<10?'0'+sc:sc); }
 </script>
 </body>
 </html>
