@@ -73,7 +73,7 @@
         .admin-footer-btns { position: sticky; bottom: 0; background: #0f172a; padding: 20px; border-top: 1px solid #334155; display: flex; gap: 12px; }
         .btn-save { background: #38bdf8; color: #0f172a; border: none; font-weight: 800; font-size: 16px; padding: 16px; border-radius: 14px; flex-grow: 1; }
 
-        /* Overlays */
+        /* General Overlays */
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
         .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         video { width: 100%; max-height: 100%; }
@@ -140,16 +140,16 @@
             <label class="admin-label">League/Category</label>
             <select id="m-cat" class="form-select admin-select"><option value="Cricket">Cricket</option><option value="IPL">IPL</option></select>
             <label class="admin-label mt-3">Banner/Card Image</label>
-            <input type="file" id="m-card-file" class="form-control admin-input mb-2" accept="image/*">
+            <input type="file" id="m-card-file" class="form-control admin-input mb-2">
             <input type="text" id="m-card-url" class="form-control admin-input" placeholder="CDN Image URL (Optional)">
         </div>
 
         <div class="row">
             <div class="col-6">
-                <div class="form-group-card"><label class="admin-label">Team One</label><input type="text" id="m-t1" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t1-file" class="form-control admin-input mb-2" accept="image/*"><input type="text" id="m-t1-url" class="form-control admin-input" placeholder="Logo Link"></div>
+                <div class="form-group-card"><label class="admin-label">Team One</label><input type="text" id="m-t1" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t1-file" class="form-control admin-input mb-2"><input type="text" id="m-t1-url" class="form-control admin-input" placeholder="Logo Link"></div>
             </div>
             <div class="col-6">
-                <div class="form-group-card"><label class="admin-label">Team Two</label><input type="text" id="m-t2" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t2-file" class="form-control admin-input mb-2" accept="image/*"><input type="text" id="m-t2-url" class="form-control admin-input" placeholder="Logo Link"></div>
+                <div class="form-group-card"><label class="admin-label">Team Two</label><input type="text" id="m-t2" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t2-file" class="form-control admin-input mb-2"><input type="text" id="m-t2-url" class="form-control admin-input" placeholder="Logo Link"></div>
             </div>
         </div>
 
@@ -190,10 +190,8 @@
     <div id="share-sheet" onclick="event.stopPropagation()">
         <div class="share-header"><h5>Share App Via</h5><i class="fa-solid fa-times fs-4" onclick="closeShareSheet()"></i></div>
         <div class="share-grid">
-            <a href="#" class="share-item" id="share-wa" target="_blank"><div class="share-icon-w sh-ws"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
-            <a href="#" class="share-item" id="share-tg" target="_blank"><div class="share-icon-w sh-tg"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
-            <a href="#" class="share-item" id="share-fb" target="_blank"><div class="share-icon-w sh-fb"><i class="fa-brands fa-facebook-f"></i></div><span>Facebook</span></a>
-            <a href="#" class="share-item" id="share-ms" target="_blank"><div class="share-icon-w sh-ms"><i class="fa-brands fa-facebook-messenger"></i></div><span>Messenger</span></a>
+            <a href="#" class="share-item" onclick="openShareSheet()"><div class="share-icon-w sh-ws"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
+            <a href="#" class="share-item"><div class="share-icon-w sh-tg"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
         </div>
     </div>
 </div>
@@ -204,7 +202,7 @@
     const db = firebase.database();
 
     const ONESIGNAL_APP_ID = "49c9df81-e12d-4f78-84e0-11266a6ab504";
-    let matchDatabase = [];
+    let matchDatabase = []; // Initialized as Array
     let currentFilter = 'All';
     const video = document.getElementById('main-video');
 
@@ -213,7 +211,14 @@
     function loadFromFirebase() { 
         db.ref('matches').on('value', snap => { 
             let data = snap.val();
-            matchDatabase = Array.isArray(data) ? data : (data ? Object.values(data) : []);
+            // Critical Fix: Ensure matchDatabase is ALWAYS an Array
+            if (!data) {
+                matchDatabase = [];
+            } else if (Array.isArray(data)) {
+                matchDatabase = data;
+            } else {
+                matchDatabase = Object.values(data);
+            }
             refreshUI(); 
             if(document.getElementById('admin-panel').style.display === 'block') renderAdminList(); 
         }); 
@@ -231,6 +236,9 @@
 
     async function saveMatch() {
         try {
+            // FIX: Always treat matchDatabase as Array before pushing
+            if (!Array.isArray(matchDatabase)) matchDatabase = [];
+
             const idx = parseInt(document.getElementById('edit-index').value);
             const pushKey = document.getElementById('m-push-key').value;
             let links = [];
@@ -258,16 +266,25 @@
                 });
             }
 
-            if(idx > -1) matchDatabase[idx] = mObj; else matchDatabase.push(mObj);
-            db.ref('matches').set(matchDatabase).then(() => { alert("Saved to Cloud! ✅"); resetAdminForm(); });
+            if(idx > -1) {
+                matchDatabase[idx] = mObj;
+            } else {
+                matchDatabase.push(mObj);
+            }
+            
+            db.ref('matches').set(matchDatabase).then(() => { 
+                alert("Saved to Cloud! ✅"); 
+                resetAdminForm(); 
+            });
 
         } catch (e) { alert("Error: " + e.message); }
     }
 
     function refreshUI() {
-        let filtered = currentFilter === 'All' ? matchDatabase : matchDatabase.filter(m => m.cat === currentFilter);
+        let filtered = currentFilter === 'All' ? matchDatabase : matchDatabase.filter(m => m && m.cat === currentFilter);
         const list = document.getElementById('match-list');
         list.innerHTML = filtered.map((m) => {
+            if(!m) return '';
             const realIdx = matchDatabase.indexOf(m);
             return `<div class="match-card" onclick="openLinks(${realIdx})">
                 <img src="${m.card}" class="m-card-img">
@@ -278,8 +295,8 @@
             </div>`;
         }).join('');
         document.getElementById('c-all').innerText = matchDatabase.length;
-        document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m.cat === 'Cricket').length;
-        document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m.cat === 'IPL').length;
+        document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m && m.cat === 'Cricket').length;
+        document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m && m.cat === 'IPL').length;
     }
 
     function openLinks(idx) {
@@ -299,14 +316,10 @@
     function closeAdmin() { document.getElementById('admin-panel').style.display='none'; resetAdminForm(); }
     
     function renderAdminList() { 
-        document.getElementById('admin-items-list').innerHTML = matchDatabase.map((m, i) => `
-            <div class="admin-item">
-                <span>${m.t1} vs ${m.t2}</span>
-                <div>
-                    <i class="fa-solid fa-pen-to-square text-info me-3" style="cursor:pointer;" onclick="editMatch(${i})"></i>
-                    <i class="fa-solid fa-trash text-danger" style="cursor:pointer;" onclick="deleteMatch(${i})"></i>
-                </div>
-            </div>`).join(''); 
+        document.getElementById('admin-items-list').innerHTML = matchDatabase.map((m, i) => {
+            if(!m) return '';
+            return `<div class="admin-item"><span>${m.t1} vs ${m.t2}</span><div><i class="fa-solid fa-pen-to-square text-info me-3" style="cursor:pointer;" onclick="editMatch(${i})"></i><i class="fa-solid fa-trash text-danger" style="cursor:pointer;" onclick="deleteMatch(${i})"></i></div></div>`;
+        }).join(''); 
     }
 
     function deleteMatch(i) { if(confirm("Delete from Cloud?")) { matchDatabase.splice(i, 1); db.ref('matches').set(matchDatabase); } }
@@ -320,14 +333,7 @@
         document.getElementById('m-live').checked = m.isLive; 
         document.getElementById('m-time').value = m.time;
         const container = document.getElementById('links-container'); 
-        container.innerHTML = m.links.map((l, idx) => `
-            <div class="link-input-group">
-                ${idx > 0 ? '<div class="del-link-btn" onclick="this.parentElement.remove()">×</div>' : ''}
-                <div class="row g-2">
-                    <div class="col-5"><input type="text" class="form-control admin-input s-name" value="${l.name}"></div>
-                    <div class="col-7"><input type="text" class="form-control admin-input s-url" value="${l.url}"></div>
-                </div>
-            </div>`).join('');
+        container.innerHTML = m.links.map((l, idx) => `<div class="link-input-group">${idx > 0 ? '<div class="del-link-btn" onclick="this.parentElement.remove()">×</div>' : ''}<div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" value="${l.name}"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" value="${l.url}"></div></div></div>`).join('');
         document.getElementById('cancel-edit-btn').style.display = 'block'; 
         document.getElementById('admin-panel').scrollTo({top: 400, behavior: 'smooth'});
     }
@@ -358,7 +364,7 @@
     function closeShareSheet() { document.getElementById('share-sheet-overlay').classList.remove('show'); }
     function searchFn() { 
         let val = document.getElementById('searchInput').value.toLowerCase(); 
-        let filtered = matchDatabase.filter(m => (m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); 
+        let filtered = matchDatabase.filter(m => m && (m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); 
         document.getElementById('match-list').innerHTML = filtered.map((m) => `<div class="match-card" onclick="openLinks(${matchDatabase.indexOf(m)})"><img src="${m.card}" class="m-card-img"><div class="card-overlay"><div class="card-mid-row"><div class="team-box"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-text">VS</div><div class="team-box"><img src="${m.t2_img}"><div>${m.t2}</div></div></div><div class="card-bottom-row">${m.isLive ? '<div class="live-tag">LIVE</div>' : `<div>${m.time}</div>`}<button class="watch-btn-overlay">WATCH NOW</button></div></div></div>`).join('');
     }
 </script>
