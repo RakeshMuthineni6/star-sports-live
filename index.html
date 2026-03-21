@@ -4,93 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SportSync Live</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1895449179923280"
-     crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1895449179923280" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1895449179923280" crossorigin="anonymous"></script>
 
     <style>
         :root { --bg: #051412; --card: #0e2522; --accent: #f7d417; --text: #bfc9c7; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
 
-        /* --- SPLASH SCREEN --- */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 20000;
-            transition: opacity 0.5s ease-out;
-        }
+        /* SPLASH SCREEN */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20000; transition: opacity 0.5s; }
         .splash-logo { width: 120px; height: 120px; border-radius: 25px; box-shadow: 0 0 30px rgba(247, 212, 23, 0.4); margin-bottom: 20px; border: 2px solid var(--accent); object-fit: cover; }
-        .splash-name { font-size: 26px; font-weight: bold; color: white; letter-spacing: 1px; }
         .loader-dot { width: 45px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 15px; position: relative; overflow: hidden; }
         .loader-dot::after { content: ''; position: absolute; left: -100%; width: 100%; height: 100%; background: var(--accent); animation: loading 1.5s infinite; }
         @keyframes loading { 100% { left: 100%; } }
 
-        /* --- UI HEADER --- */
+        /* UI HEADER */
         .topbar { background: var(--bg); padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .topbar h4 { font-size: 20px; font-weight: bold; margin: 0; }
-        .top-icons i { font-size: 18px; cursor: pointer; transition: 0.2s; padding: 5px; }
+        .top-icons i { font-size: 18px; cursor: pointer; padding: 5px; }
 
         .search-container { display: none; padding: 10px 15px; background: var(--bg); animation: slideDown 0.3s ease-out; }
-        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         #searchInput { width: 100%; padding: 10px 18px; border-radius: 25px; border: 1px solid #1c3631; background: var(--card); color: white; outline: none; }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .filters { display: flex; padding: 5px 15px 15px; gap: 10px; overflow-x: auto; scrollbar-width: none; }
-        .f-btn { background: var(--card); border: 1.2px solid #1c3631; color: white; padding: 6px 15px; border-radius: 25px; font-size: 13px; white-space: nowrap; cursor: pointer; display: flex; align-items: center; }
+        .f-btn { background: var(--card); border: 1.2px solid #1c3631; color: white; padding: 6px 15px; border-radius: 25px; font-size: 13px; cursor: pointer; white-space: nowrap; }
         .f-btn.active { border-color: var(--accent); background: #1c3a35; }
         .badge-count { background: #e50914; border-radius: 50%; padding: 1px 6px; font-size: 10px; margin-left: 6px; border: 1px solid white; }
 
-        /* Match Card */
+        /* MATCH CARD */
         .match-card { background: var(--card); margin: 12px 15px; border-radius: 15px; padding: 18px; border: 1px solid #1c3631; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transform: translateY(10px); transition: 0.4s ease-out; cursor: pointer; }
         .match-card.show { opacity: 1; transform: translateY(0); }
-        .m-category { font-size: 11px; color: var(--text); margin-bottom: 12px; font-weight: 600; text-transform: uppercase; }
+        .m-card-img { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; border: 1px solid #1c3631; }
         .teams-container { display: flex; justify-content: space-between; align-items: center; text-align: center; }
         .team-info img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ffffff11; margin-bottom: 8px; background: #000; object-fit: cover; }
-        .team-info div { font-weight: bold; font-size: 14px; }
         .vs-divider { font-weight: 800; font-size: 20px; color: white; }
-        .live-tag { background: #e50914; color: white; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; animation: blink 1.2s infinite; }
-        .live-tag::before { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
+        .live-tag { background: #e50914; color: white; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; animation: blink 1.2s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .watch-btn { background: var(--accent); color: black; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; font-size: 12px; }
 
-        /* --- POPUP ADS (BOTTOM SLIDE) --- */
-        #bottom-popup-ad {
-            position: fixed; bottom: -100%; left: 0; width: 100%; background: #fff;
-            z-index: 1000; transition: bottom 0.5s ease-in-out; border-top-left-radius: 20px; border-top-right-radius: 20px;
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.5); padding: 10px;
-        }
-        #bottom-popup-ad.active { bottom: 0; }
-        .close-popup { position: absolute; top: -15px; right: 20px; background: #e50914; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 2px solid white; }
+        /* ADMIN PANEL */
+        #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 30000; padding: 20px; overflow-y: auto; }
+        .admin-form label { color: var(--accent); font-size: 13px; margin-top: 15px; display: block; font-weight: bold; text-transform: uppercase; }
+        .form-control, .form-select { background: #0e2522; border: 1px solid #1c3631; color: white; font-size: 14px; margin-top: 5px; }
+        .admin-item { background: #0e2522; padding: 12px; border-radius: 8px; border: 1px solid #1c3631; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .link-input-group { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 8px; border: 1px solid #1c3631; }
 
-        /* --- FULL SCREEN AD OVERLAY (INTERSTITIAL) --- */
-        #interstitial-ad {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg);
-            z-index: 50000; display: none; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .ad-timer { position: absolute; top: 20px; right: 20px; color: white; font-weight: bold; }
-
-        /* --- HYBRID SHARE OVERLAY --- */
-        #share-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.85); z-index: 30000; animation: fadeIn 0.2s;
-        }
-        .share-sheet {
-            position: absolute; bottom: 0; width: 100%; background: var(--card);
-            border-top-left-radius: 25px; border-top-right-radius: 25px;
-            padding: 25px 20px; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .share-header { text-align: center; margin-bottom: 25px; font-weight: bold; font-size: 18px; }
-        .share-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
-        .share-item { cursor: pointer; }
-        .share-item i { width: 50px; height: 50px; line-height: 50px; border-radius: 12px; font-size: 22px; color: white; margin-bottom: 8px; display: inline-block; }
-        .share-label { font-size: 11px; color: var(--text); }
-        .bg-wa { background: #25D366; } .bg-tg { background: #0088cc; } .bg-fb { background: #1877F2; } .bg-more { background: #607d8b; }
-
-        /* --- PLAYER --- */
+        /* PLAYER */
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
         .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         video { width: 100%; height: auto; max-height: 100%; }
@@ -98,10 +63,11 @@
         .p-ui.hide { opacity: 0; }
         .p-top, .p-mid i, .p-bottom { pointer-events: auto; }
         .p-top { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); }
+        .p-mid { display: flex; justify-content: center; gap: 60px; font-size: 45px; color: white; align-items: center; }
         .p-bottom { padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .gesture-box { position: absolute; top: 50%; transform: translateY(-50%); width: 45px; height: 160px; background: rgba(0,0,0,0.6); border-radius: 30px; display: none; flex-direction: column-reverse; align-items: center; padding: 12px; z-index: 20020; pointer-events: none; }
+        .bar-fill { width: 6px; background: var(--accent); border-radius: 3px; height: 0%; transition: 0.1s; }
+        #br-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; pointer-events: none; z-index: 19999; opacity: 0; }
     </style>
 </head>
 <body>
@@ -109,259 +75,220 @@
 <div id="br-mask"></div>
 
 <div id="splash-screen">
-    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGEMIb2NLYINkRimbJUxmjfY_GeETgfph0hH2csK7sYmxC4upohieqkyB-43fg_HoQmgHhp0aNSLy2aGfy_fJI7uIReIAqWMfC8T1L65oTbMMAaRDBKwcLDxSM5Fi9SjvGyGVab4BGC85pmFFnpnXIyeOsd3hcNs5Vg0Zz6msAGXX8HUg7OUOac_skmn8/s2048/Gemini_Generated_Image_a89yqoa89yqoa89y.png" class="splash-logo" alt="App Icon">
-    <div class="splash-name">SportSync Live</div>
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGEMIb2NLYINkRimbJUxmjfY_GeETgfph0hH2csK7sYmxC4upohieqkyB-43fg_HoQmgHhp0aNSLy2aGfy_fJI7uIReIAqWMfC8T1L65oTbMMAaRDBKwcLDxSM5Fi9SjvGyGVab4BGC85pmFFnpnXIyeOsd3hcNs5Vg0Zz6msAGXX8HUg7OUOac_skmn8/s2048/Gemini_Generated_Image_a89yqoa89yqoa89y.png" class="splash-logo">
+    <div style="font-weight:bold; font-size:24px; margin-top:10px;">SportSync Live</div>
     <div class="loader-dot"></div>
-</div>
-
-<div id="interstitial-ad">
-    <div class="ad-timer" id="ad-timer-text">Ad closing in 5s...</div>
-    <div style="width: 100%; max-width: 400px; padding: 20px; color: black;">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-1895449179923280"
-             data-ad-slot="6999248761"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-    <button class="btn btn-light mt-4 rounded-pill px-5" id="close-ad-btn" style="display:none;" onclick="hideInterstitial()">Close Ad</button>
-</div>
-
-<div id="bottom-popup-ad">
-    <div class="close-popup" onclick="togglePopupAd(false)">×</div>
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-1895449179923280"
-         data-ad-slot="6999248761"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <div id="app-view">
     <div class="topbar">
         <h4>SportSync Live</h4>
         <div class="top-icons">
-            <i class="fa-solid fa-share-nodes me-3" onclick="triggerAdBeforeAction('share')"></i>
-            <i class="fa-solid fa-rotate-right me-3" onclick="triggerAdBeforeAction('refresh')"></i>
-            <i class="fa-solid fa-magnifying-glass" onclick="triggerAdBeforeAction('search')"></i>
+            <i class="fa-solid fa-share-nodes me-3" onclick="shareApp()"></i>
+            <i class="fa-solid fa-rotate-right me-3" onclick="refreshData()"></i>
+            <i class="fa-solid fa-magnifying-glass me-3" id="searchTrigger" onclick="toggleSearch(event)"></i>
+            <i class="fa-solid fa-lock" onclick="openAdmin()"></i>
         </div>
     </div>
-
-    <div class="search-container" id="searchBox">
-        <input type="text" id="searchInput" placeholder="Search matches..." onkeyup="searchFn()">
-    </div>
-    
+    <div class="search-container" id="searchBox"><input type="text" id="searchInput" placeholder="Search matches..." onkeyup="searchFn()"></div>
     <div class="filters">
         <div class="f-btn active" onclick="filterData('All', this)">All <span class="badge-count" id="c-all">0</span></div>
         <div class="f-btn" onclick="filterData('Cricket', this)">Cricket <span class="badge-count" id="c-cricket">0</span></div>
         <div class="f-btn" onclick="filterData('IPL', this)">IPL <span class="badge-count" id="c-ipl">0</span></div>
     </div>
-
     <div id="match-list"></div>
 </div>
 
-<div id="share-overlay" onclick="closeShareSheet()">
-    <div class="share-sheet" onclick="event.stopPropagation()">
-        <div class="share-header">Share SportSync Live</div>
-        <div class="share-options">
-            <div class="share-item" onclick="shareVia('wa')"><i class="fa-brands fa-whatsapp bg-wa"></i><div class="share-label">WhatsApp</div></div>
-            <div class="share-item" onclick="shareVia('tg')"><i class="fa-brands fa-telegram bg-tg"></i><div class="share-label">Telegram</div></div>
-            <div class="share-item" onclick="shareVia('fb')"><i class="fa-brands fa-facebook-f bg-fb"></i><div class="share-label">Facebook</div></div>
-            <div class="share-item" onclick="triggerNativeShare()"><i class="fa-solid fa-share-nodes bg-more"></i><div class="share-label">More Apps</div></div>
-        </div>
-        <button class="btn btn-dark w-100 mt-4 rounded-pill" onclick="closeShareSheet()">Cancel</button>
-    </div>
+<div id="link-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:15000;">
+    <div class="topbar"><i class="fa-solid fa-arrow-left" onclick="closeLink()"></i><h4 id="link-title">Server Selection</h4><i></i></div>
+    <div id="link-area" class="mt-4"></div>
 </div>
 
-<div id="link-selection-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:15000;">
-    <div class="topbar"><div class="d-flex align-items-center"><i class="fa-solid fa-arrow-left me-3" onclick="closeLinkOverlay()"></i><h4 class="m-0" id="selection-title">Servers</h4></div></div>
-    <div class="link-container" id="link-list-area" style="padding:20px;"></div>
+<div id="admin-panel">
+    <div class="d-flex justify-content-between align-items-center mb-3 text-warning"><h4>Admin Dashboard</h4><button class="btn btn-sm btn-danger" onclick="closeAdmin()">X</button></div>
+    <div id="admin-list" class="mb-4"></div>
+    <hr>
+    <h5 id="form-title" class="text-accent">Enter Match Details Below</h5>
+    <input type="hidden" id="edit-index" value="-1">
+
+    <label>Select Category*</label>
+    <select id="m-cat" class="form-select"><option value="Cricket">Cricket</option><option value="IPL">IPL</option></select>
+
+    <label>Match Card Image (Upload - Optional)</label>
+    <input type="file" id="m-card-file" class="form-control" accept="image/*">
+
+    <div class="row">
+        <div class="col-6">
+            <label>Team 1 Name*</label>
+            <input type="text" id="m-t1" class="form-control" placeholder="Ex: RCB">
+            <label>Team 1 Logo*</label>
+            <input type="file" id="m-t1-file" class="form-control" accept="image/*">
+        </div>
+        <div class="col-6">
+            <label>Team 2 Name*</label>
+            <input type="text" id="m-t2" class="form-control" placeholder="Ex: SRH">
+            <label>Team 2 Logo*</label>
+            <input type="file" id="m-t2-file" class="form-control" accept="image/*">
+        </div>
+    </div>
+
+    <label>Streaming Links*</label>
+    <div id="links-container">
+        <div class="link-input-group">
+            <div class="row g-2">
+                <div class="col-5">
+                    <label style="margin-top:0; color:#555; font-size:10px;">Server Name*</label>
+                    <input type="text" class="form-control s-name" placeholder="Ex: Server 1" required>
+                </div>
+                <div class="col-7">
+                    <label style="margin-top:0; color:#555; font-size:10px;">Streaming URL*</label>
+                    <input type="text" class="form-control s-url" placeholder="m3u8 link" required>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-sm btn-outline-warning mt-2 w-100" onclick="addNewLinkField()">+ Add Extra Link</button>
+
+    <label>Schedule Date & Time (Optional)</label>
+    <input type="datetime-local" id="m-time" class="form-control">
+
+    <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="m-live"><label class="form-check-label text-white">Enable Live Mode & Send Notification</label></div>
+    <button class="btn btn-warning w-100 mt-4 fw-bold py-2" onclick="saveMatch()" id="save-btn">ADD MATCH</button>
 </div>
 
 <div id="player-layer">
     <div class="v-wrap" id="v-container">
         <video id="main-video" playsinline></video>
+        <div id="left-zone" class="gesture-zone" style="position:absolute;left:0;width:40%;height:100%;z-index:20005;"></div>
+        <div id="right-zone" class="gesture-zone" style="position:absolute;right:0;width:40%;height:100%;z-index:20005;"></div>
+        <div id="bright-box" class="gesture-box" style="left:20px;"><div class="bar-fill" id="b-fill"></div><i class="fa-solid fa-sun mt-2"></i></div>
+        <div id="vol-box" class="gesture-box" style="right:20px;"><div class="bar-fill" id="v-fill"></div><i class="fa-solid fa-volume-high mt-2"></i></div>
         <div class="p-ui" id="player-controls">
-            <div class="p-top"><div class="d-flex align-items-center"><i class="fa-solid fa-arrow-left me-3" onclick="closePlayer()"></i><span id="video-title">Stream</span></div></div>
-            <div class="p-mid text-center" style="pointer-events: auto;"><i class="fa-solid fa-play fa-3x" id="play-pause-btn" onclick="togglePlay(event)"></i></div>
-            <div class="p-bottom"><input type="range" id="seek-slider" value="0" style="width:100%; accent-color:#f7d417;"><div class="d-flex justify-content-between mt-2" style="font-size: 12px;"><span id="time-label">00:00 / 00:00</span><i class="fa-solid fa-expand" onclick="toggleFS(event)"></i></div></div>
+            <div class="p-top"><i class="fa-solid fa-arrow-left" onclick="closePlayer()"></i><span id="v-title">SportSync Live</span><i class="fa-solid fa-lock-open" id="lock-btn" onclick="toggleLock(event)"></i></div>
+            <div class="p-mid"><i class="fa-solid fa-rotate-left" onclick="skip(-10, event)"></i><i class="fa-solid fa-play" id="p-play" onclick="togglePlay(event)"></i><i class="fa-solid fa-rotate-right" onclick="skip(10, event)"></i></div>
+            <div class="p-bottom"><input type="range" id="seek-slider" style="width:100%; accent-color:#f7d417;"><div class="d-flex justify-content-between mt-2" style="font-size:12px;"><span id="time-lbl">00:00 / 00:00</span><i class="fa-solid fa-expand" onclick="toggleFS(event)"></i></div></div>
         </div>
     </div>
 </div>
 
 <script>
-    const APP_LINK = 'https://play.google.com/store/apps/details?id=starsports.aplitob';
-    const SHARE_MSG = "Watch Live Cricket & IPL in HD! Download SportSync Live App now: " + APP_LINK;
-    const LIVE_STREAM_URL = 'https://mxonlive.wuaze.com/AYNAWEB/play.php?id=f064e069-8861-43d5-ac79-828b029a50a1';
-
-    const allMatches = [
-        { cat: "Cricket", title: "T20 International", t1: "New Zealand", t1_img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg", t2: "South Africa", t2_img: "https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg",
-          links: [{ name: "Server 1 HD", url: LIVE_STREAM_URL }, { name: "Server 2 (⚡ FAST)", url: LIVE_STREAM_URL }] },
-        { cat: "IPL", title: "IPL Season 2026", t1: "RCB", t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Royal_Challengers_Bangalore_2020_Logo.svg/1200px-Royal_Challengers_Bangalore_2020_Logo.svg.png", t2: "SRH", t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/1200px-Sunrisers_Hyderabad.svg.png",
-          links: [{ name: "Link 1 HD", url: LIVE_STREAM_URL }, { name: "Link 2 Pro", url: LIVE_STREAM_URL }] }
+    // కొత్త మ్యాచ్ కార్డ్స్ ఇక్కడ యాడ్ చేశాను
+    let matchDatabase = JSON.parse(localStorage.getItem('matchVault')) || [
+        { cat: "IPL", t1: "RCB", t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Royal_Challengers_Bangalore_2020_Logo.svg/1200px-Royal_Challengers_Bangalore_2020_Logo.svg.png", t2: "SRH", t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/1200px-Sunrisers_Hyderabad.svg.png", links: [{name: "Server 1 HD", url: "https://mxonlive.wuaze.com/AYNAWEB/play.php?id=f064e069-8861-43d5-ac79-828b029a50a1"}], time: "", isLive: true, card: "" },
+        { cat: "Cricket", t1: "India", t1_img: "https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg", t2: "Australia", t2_img: "https://upload.wikimedia.org/wikipedia/commons/8/88/Flag_of_Australia_%28converted%29.svg", links: [{name: "Server 1 HD", url: ""}], time: "2026-03-22T19:30", isLive: false, card: "" },
+        { cat: "IPL", t1: "CSK", t1_img: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/1200px-Chennai_Super_Kings_Logo.svg.png", t2: "MI", t2_img: "https://upload.wikimedia.org/wikipedia/en/thumb/6/67/Mumbai_Indians_logo.svg/1200px-Mumbai_Indians_logo.svg.png", links: [{name: "Live Link", url: ""}], time: "2026-03-23T19:30", isLive: false, card: "" }
     ];
 
     const video = document.getElementById('main-video');
-    const playerLayer = document.getElementById('player-layer');
-    const pUI = document.getElementById('player-controls');
-    let hls = null, nextAction = null, currentStreamData = null;
+    let hls = null, isLocked = false, brightness = 1.0;
 
-    // --- AD LOGIC ---
-    function triggerAdBeforeAction(action, data = null) {
-        nextAction = action;
-        currentStreamData = data;
-        showInterstitial();
+    window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.display='none'; refreshData(); }, 2500); };
+
+    // SEARCH & CLICK OUTSIDE LOGIC
+    function toggleSearch(e) { e.stopPropagation(); let s = document.getElementById('searchBox'); s.style.display = (s.style.display==='block')?'none':'block'; if(s.style.display==='block') document.getElementById('searchInput').focus(); }
+    document.addEventListener('click', e => { let sBox = document.getElementById('searchBox'); if (sBox.style.display === 'block' && !sBox.contains(e.target) && e.target !== document.getElementById('searchTrigger')) sBox.style.display = 'none'; });
+
+    function openAdmin() { if(prompt("Enter Password:") === "Tecra@123") { document.getElementById('admin-panel').style.display='block'; renderAdminList(); } }
+    function closeAdmin() { document.getElementById('admin-panel').style.display='none'; resetForm(); }
+
+    // IMAGE COMPRESSION (సేవ్ ప్రాబ్లం సాల్వ్ చేయడానికి)
+    function compressImg(file) {
+        return new Promise(resolve => {
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = e => {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                    canvas.width = 300; canvas.height = 300; ctx.drawImage(img, 0, 0, 300, 300);
+                    resolve(canvas.toDataURL('image/jpeg', 0.6));
+                };
+            };
+        });
     }
 
-    function showInterstitial() {
-        const adLayer = document.getElementById('interstitial-ad');
-        const timerText = document.getElementById('ad-timer-text');
-        const closeBtn = document.getElementById('close-ad-btn');
-        adLayer.style.display = 'flex';
-        closeBtn.style.display = 'none';
-        
-        let count = 5;
-        timerText.innerText = `Ad closing in ${count}s...`;
-        
-        const interval = setInterval(() => {
-            count--;
-            timerText.innerText = `Ad closing in ${count}s...`;
-            if (count <= 0) {
-                clearInterval(interval);
-                timerText.innerText = "Ad ready to close.";
-                closeBtn.style.display = 'block';
-            }
-        }, 1000);
+    async function saveMatch() {
+        const idx = parseInt(document.getElementById('edit-index').value);
+        const t1 = document.getElementById('m-t1').value, t2 = document.getElementById('m-t2').value;
+        const linkElements = document.querySelectorAll('.link-input-group');
+        let links = [];
+        linkElements.forEach(el => {
+            const n = el.querySelector('.s-name').value, u = el.querySelector('.s-url').value;
+            if(n && u) links.push({name: n, url: u});
+        });
+
+        if(!t1 || !t2 || links.length === 0) return alert("Required fields missing!");
+
+        const mCard = document.getElementById('m-card-file').files[0];
+        const t1Log = document.getElementById('m-t1-file').files[0];
+        const t2Log = document.getElementById('m-t2-file').files[0];
+
+        const mObj = {
+            cat: document.getElementById('m-cat').value, t1, t2,
+            t1_img: t1Log ? await compressImg(t1Log) : (idx > -1 ? matchDatabase[idx].t1_img : ""),
+            t2_img: t2Log ? await compressImg(t2Log) : (idx > -1 ? matchDatabase[idx].t2_img : ""),
+            card: mCard ? await compressImg(mCard) : (idx > -1 ? matchDatabase[idx].card : ""),
+            links: links, time: document.getElementById('m-time').value, isLive: document.getElementById('m-live').checked
+        };
+
+        if(idx > -1) matchDatabase[idx] = mObj; else matchDatabase.push(mObj);
+        try { localStorage.setItem('matchVault', JSON.stringify(matchDatabase)); alert("Match Saved!"); closeAdmin(); refreshData(); } catch(e) { alert("Memory Full! Delete old matches."); }
     }
 
-    function hideInterstitial() {
-        document.getElementById('interstitial-ad').style.display = 'none';
-        executeNextAction();
+    // -- పాత ప్లేయర్ ఆప్షన్స్ & గెస్చర్స్ --
+    function playStream(url, title) {
+        closeLink(); document.getElementById('player-layer').style.display = 'block'; document.getElementById('v-title').innerText = title;
+        if (Hls.isSupported()) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } 
+        else { video.src = url; video.play(); }
     }
 
-    function executeNextAction() {
-        if (nextAction === 'share') openShareSheet();
-        if (nextAction === 'refresh') refreshData();
-        if (nextAction === 'search') toggleSearch();
-        if (nextAction === 'play') startStreaming(currentStreamData.url, currentStreamData.title);
-        nextAction = null;
-    }
+    function closePlayer() { document.getElementById('player-layer').style.display = 'none'; video.pause(); }
+    function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); }
+    function skip(v, e) { e.stopPropagation(); video.currentTime += v; }
+    function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
 
-    function togglePopupAd(show) {
-        const popup = document.getElementById('bottom-popup-ad');
-        show ? popup.classList.add('active') : popup.classList.remove('active');
-    }
+    // GESTURES
+    let startY, startVal;
+    document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startVal = brightness; document.getElementById('bright-box').style.display='flex'; });
+    document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; brightness = Math.min(Math.max(startVal+d, 0), 1); document.getElementById('br-mask').style.opacity = 1-brightness; document.getElementById('b-fill').style.height = (brightness*100)+'%'; });
+    document.getElementById('right-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startVal = video.volume; document.getElementById('vol-box').style.display='flex'; });
+    document.getElementById('right-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; video.volume = Math.min(Math.max(startVal+d, 0), 1); document.getElementById('v-fill').style.height = (video.volume*100)+'%'; });
+    document.querySelectorAll('.gesture-zone').forEach(z => { 
+        z.addEventListener('touchend', () => { document.querySelectorAll('.gesture-box').forEach(b => b.style.display='none'); });
+        z.addEventListener('click', () => { if(!isLocked) document.getElementById('player-controls').classList.toggle('hide'); });
+    });
+    function toggleLock(e) { e.stopPropagation(); isLocked = !isLocked; document.getElementById('lock-btn').className = isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open'; document.getElementById('player-controls').classList.toggle('hide', isLocked); }
 
-    // --- APP UI LOGIC ---
-    window.onload = () => { 
-        setTimeout(() => { 
-            document.getElementById('splash-screen').style.opacity = '0'; 
-            setTimeout(() => { 
-                document.getElementById('splash-screen').style.display = 'none'; 
-                renderUI(allMatches); 
-                setTimeout(() => togglePopupAd(true), 2000); // Show popup after 2s
-            }, 500); 
-        }, 3000); 
-    };
-
-    function renderUI(data) { 
-        document.getElementById('match-list').innerHTML = data.map((m, idx) => `
-            <div class="match-card" onclick="openLinkSelection(${idx})">
-                <div class="m-category">${m.cat} | ${m.title}</div>
+    // UI RENDER FUNCTIONS
+    function renderUI(data) {
+        document.getElementById('match-list').innerHTML = data.map((m, i) => `
+            <div class="match-card show" onclick="openLinks(${i})">
+                ${m.card ? `<img src="${m.card}" class="m-card-img">` : ''}
                 <div class="teams-container">
                     <div class="team-info"><img src="${m.t1_img}"><div>${m.t1}</div></div>
                     <div class="vs-divider">VS</div>
                     <div class="team-info"><img src="${m.t2_img}"><div>${m.t2}</div></div>
                 </div>
                 <div class="footer-row">
-                    <div class="live-tag">Live</div>
+                    ${m.isLive ? '<div class="live-tag">Live</div>' : `<div style="font-size:11px;color:var(--accent)">${m.time.replace('T', ' ')}</div>`}
                     <button class="watch-btn">▶ WATCH NOW</button>
                 </div>
-            </div>`).join(''); 
-        setTimeout(() => document.querySelectorAll('.match-card').forEach(c => c.classList.add('show')), 100); 
-        updateCounts(); 
+            </div>
+        `).join('');
+        updateCounts();
     }
-
-    function openLinkSelection(index) { 
-        const match = allMatches[index]; 
-        document.getElementById('selection-title').innerText = match.t1 + " vs " + match.t2; 
-        document.getElementById('link-list-area').innerHTML = match.links.map(link => `
-            <div class="link-row" onclick="triggerAdBeforeAction('play', {url:'${link.url}', title:'${link.name}'})" style="background:var(--card); margin-bottom:10px; padding:15px; border-radius:12px; display:flex; align-items:center; border:1px solid #1c3631;">
-                <i class="fa-solid fa-play me-3" style="color:var(--accent);"></i>
-                <span class="link-text">${link.name}</span>
-            </div>`).join(''); 
-        document.getElementById('link-selection-overlay').style.display = 'block'; 
-    }
-
-    function startStreaming(url, title) {
-        closeLinkOverlay();
-        playerLayer.style.display = 'block';
-        document.getElementById('video-title').innerText = title;
-        if (Hls.isSupported() && url.includes('.m3u8')) {
-            if(hls) hls.destroy();
-            hls = new Hls();
-            hls.loadSource(url);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-        } else {
-            video.src = url;
-            video.play().catch(()=>{});
-        }
-    }
-
-    function closePlayer() { playerLayer.style.display = 'none'; video.pause(); video.src = ""; }
-    function closeLinkOverlay() { document.getElementById('link-selection-overlay').style.display = 'none'; }
-    function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); updatePlayBtn(); }
-    function updatePlayBtn() { document.getElementById('play-pause-btn').className = video.paused ? 'fa-solid fa-play fa-3x' : 'fa-solid fa-pause fa-3x'; }
-    function toggleSearch() { const s = document.getElementById('searchBox'); s.style.display = (s.style.display === 'block') ? 'none' : 'block'; }
-    function openShareSheet() { document.getElementById('share-overlay').style.display = 'block'; }
-    function closeShareSheet() { document.getElementById('share-overlay').style.display = 'none'; }
     
-    function refreshData() { 
-        document.getElementById('match-list').innerHTML = "<div class='text-center mt-5'><div class='spinner-border text-warning'></div></div>"; 
-        setTimeout(() => renderUI(allMatches), 800); 
+    function openLinks(i) {
+        const m = matchDatabase[i]; document.getElementById('link-title').innerText = m.t1 + " vs " + m.t2;
+        document.getElementById('link-area').innerHTML = m.links.map(l => `<div class="link-row" onclick="playStream('${l.url}', '${l.name}')"><i class="fa-solid fa-play me-3 text-warning"></i><span>${l.name}</span></div>`).join('');
+        document.getElementById('link-overlay').style.display = 'block';
     }
-
-    function filterData(cat, btn) { 
-        document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); 
-        btn.classList.add('active'); 
-        renderUI(cat === 'All' ? allMatches : allMatches.filter(m => m.cat === cat)); 
-    }
-
-    function searchFn() { 
-        const val = document.getElementById('searchInput').value.toLowerCase(); 
-        renderUI(allMatches.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); 
-    }
-
-    function updateCounts() { 
-        document.getElementById('c-all').innerText = allMatches.length; 
-        document.getElementById('c-cricket').innerText = allMatches.filter(m => m.cat === 'Cricket').length; 
-        document.getElementById('c-ipl').innerText = allMatches.filter(m => m.cat === 'IPL').length; 
-    }
-
-    video.addEventListener('timeupdate', () => {
-        document.getElementById('time-label').innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
-        document.getElementById('seek-slider').value = (video.currentTime / video.duration) * 100 || 0;
-    });
-
-    function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s / 60); const sec = Math.floor(s % 60); return `${m < 10 ? '0'+m : m}:${sec < 10 ? '0'+sec : sec}`; }
-    function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
-
-    function triggerNativeShare() {
-        if (navigator.share) {
-            navigator.share({ title: 'SportSync Live', text: SHARE_MSG, url: APP_LINK }).catch(() => fallbackCopy());
-        } else { fallbackCopy(); }
-    }
-    function fallbackCopy() { navigator.clipboard.writeText(SHARE_MSG); alert("Link copied!"); closeShareSheet(); }
-    function shareVia(p) {
-        const msg = encodeURIComponent(SHARE_MSG);
-        if(p==='wa') window.location.href = `whatsapp://send?text=${msg}`;
-        if(p==='tg') window.location.href = `https://t.me/share/url?url=${APP_LINK}&text=${msg}`;
-        if(p==='fb') window.location.href = `https://www.facebook.com/sharer/sharer.php?u=${APP_LINK}`;
-        closeShareSheet();
-    }
+    function closeLink() { document.getElementById('link-overlay').style.display = 'none'; }
+    function refreshData() { renderUI(matchDatabase); }
+    function searchFn() { let val = document.getElementById('searchInput').value.toLowerCase(); renderUI(matchDatabase.filter(m => m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); }
+    function filterData(c, b) { document.querySelectorAll('.f-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); renderUI(c==='All'?matchDatabase:matchDatabase.filter(m => m.cat===c)); }
+    function updateCounts() { document.getElementById('c-all').innerText = matchDatabase.length; document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m.cat==='Cricket').length; document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m.cat==='IPL').length; }
+    function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s/60), sc = Math.floor(s%60); return (m<10?'0'+m:m)+":"+(sc<10?'0'+sc:sc); }
+    video.addEventListener('timeupdate', () => { document.getElementById('time-lbl').innerText = formatTime(video.currentTime) + " / " + formatTime(video.duration); document.getElementById('seek-slider').value = (video.currentTime / video.duration) * 100 || 0; });
 </script>
 </body>
 </html>
