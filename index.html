@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
     
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -56,9 +57,9 @@
 
         /* ULTRA-MODERN ADMIN PANEL DESIGN */
         #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 30000; padding: 0; overflow-y: auto; color: #f1f5f9; }
-        .admin-header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .admin-header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
         .admin-header h4 { margin: 0; font-size: 18px; color: #38bdf8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .admin-close { background: rgba(244, 63, 94, 0.1); border: 1px solid #f43f5e; color: #f43f5e; border-radius: 10px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border:none; }
+        .admin-close { background: rgba(244, 63, 94, 0.1); border: 1px solid #f43f5e; color: #f43f5e; border-radius: 10px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; border:none; }
         .admin-content { padding: 20px; }
         .admin-section-title { font-size: 13px; text-transform: uppercase; color: #94a3b8; font-weight: 800; margin-bottom: 15px; display: block; letter-spacing: 1.5px; }
         .admin-item { background: #1e293b; padding: 16px; border-radius: 14px; border: 1px solid #334155; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -68,18 +69,18 @@
         .admin-input, .admin-select { background: #0f172a !important; border: 1px solid #334155 !important; color: #f8fafc !important; font-size: 14px !important; padding: 14px !important; border-radius: 12px !important; }
         
         .link-input-group { background: #1a2235; padding: 15px; border-radius: 14px; margin-top: 12px; border: 1px solid #334155; position: relative; }
-        .del-link-btn { position: absolute; top: -10px; right: -10px; background: #f43f5e; color: white; border-radius: 50%; width: 26px; height: 26px; border: 2px solid #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .del-link-btn { position: absolute; top: -10px; right: -10px; background: #f43f5e; color: white; border-radius: 50%; width: 26px; height: 26px; border: 2px solid #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; font-weight: bold; }
         .btn-add-server { background: rgba(56, 189, 248, 0.05); border: 2px dashed #38bdf8; color: #38bdf8; font-weight: 700; padding: 14px; border-radius: 12px; width: 100%; margin-top: 5px; }
         .admin-footer-btns { position: sticky; bottom: 0; background: #0f172a; padding: 20px; border-top: 1px solid #334155; display: flex; gap: 12px; }
-        .btn-save { background: #38bdf8; color: #0f172a; border: none; font-weight: 800; font-size: 16px; padding: 16px; border-radius: 14px; flex-grow: 1; }
+        .btn-save { background: #38bdf8; color: #0f172a; border: none; font-weight: 800; font-size: 16px; padding: 16px; border-radius: 14px; flex-grow: 1; text-transform: uppercase; }
 
-        /* General Overlays */
+        /* Overlays & Player */
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
         .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         video { width: 100%; max-height: 100%; }
         .link-row { background: #0e2522; padding: 15px; margin: 10px; border-radius: 10px; border: 1px solid #1c3631; display: flex; align-items: center; cursor: pointer; }
         #link-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:15000; }
-        
+
         #share-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 40000; justify-content: center; align-items: flex-end; }
         #share-sheet-overlay.show { display: flex; }
         #share-sheet { background: #111; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; transform: translateY(100%); transition: transform 0.3s ease-out; }
@@ -88,7 +89,6 @@
         .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
         .share-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none !important; }
         .share-icon-w { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; }
-        .sh-ws { background-color: #25D366; } .sh-tg { background-color: #0088cc; } .sh-fb { background-color: #3b5998; } .sh-ms { background-color: #0078FF; }
     </style>
 </head>
 <body onclick="hideSearchOnClick(event)">
@@ -133,23 +133,23 @@
         
         <div class="form-group-card" style="border: 1px solid #f7d417;">
             <label class="admin-label" style="color:#f7d417;">OneSignal REST API Key</label>
-            <input type="password" id="m-push-key" class="form-control admin-input" placeholder="Paste Key only to send Push">
+            <input type="password" id="m-push-key" class="form-control admin-input" placeholder="Paste Key for Notifications">
         </div>
 
         <div class="form-group-card">
             <label class="admin-label">League/Category</label>
             <select id="m-cat" class="form-select admin-select"><option value="Cricket">Cricket</option><option value="IPL">IPL</option></select>
             <label class="admin-label mt-3">Banner/Card Image</label>
-            <input type="file" id="m-card-file" class="form-control admin-input mb-2">
+            <input type="file" id="m-card-file" class="form-control admin-input mb-2" accept="image/*">
             <input type="text" id="m-card-url" class="form-control admin-input" placeholder="CDN Image URL (Optional)">
         </div>
 
         <div class="row">
             <div class="col-6">
-                <div class="form-group-card"><label class="admin-label">Team One</label><input type="text" id="m-t1" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t1-file" class="form-control admin-input mb-2"><input type="text" id="m-t1-url" class="form-control admin-input" placeholder="Logo Link"></div>
+                <div class="form-group-card"><label class="admin-label">Team One</label><input type="text" id="m-t1" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t1-file" class="form-control admin-input mb-2" accept="image/*"><input type="text" id="m-t1-url" class="form-control admin-input" placeholder="Logo Link"></div>
             </div>
             <div class="col-6">
-                <div class="form-group-card"><label class="admin-label">Team Two</label><input type="text" id="m-t2" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t2-file" class="form-control admin-input mb-2"><input type="text" id="m-t2-url" class="form-control admin-input" placeholder="Logo Link"></div>
+                <div class="form-group-card"><label class="admin-label">Team Two</label><input type="text" id="m-t2" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t2-file" class="form-control admin-input mb-2" accept="image/*"><input type="text" id="m-t2-url" class="form-control admin-input" placeholder="Logo Link"></div>
             </div>
         </div>
 
@@ -182,7 +182,7 @@
 </div>
 
 <div id="link-overlay">
-    <div class="topbar"><i class="fa-solid fa-arrow-left" onclick="closeLink()"></i><h4 id="link-title">Server Selection</h4><i></i></div>
+    <div class="topbar"><i class="fa-solid fa-arrow-left" onclick="closeLink()"></i><h4 id="link-title">Server</h4><i></i></div>
     <div id="link-area" class="mt-4"></div>
 </div>
 
@@ -190,8 +190,8 @@
     <div id="share-sheet" onclick="event.stopPropagation()">
         <div class="share-header"><h5>Share App Via</h5><i class="fa-solid fa-times fs-4" onclick="closeShareSheet()"></i></div>
         <div class="share-grid">
-            <a href="#" class="share-item" onclick="openShareSheet()"><div class="share-icon-w sh-ws"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
-            <a href="#" class="share-item"><div class="share-icon-w sh-tg"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
+            <a href="#" class="share-item" id="share-wa" target="_blank"><div class="share-icon-w" style="background:#25D366;"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
+            <a href="#" class="share-item" id="share-tg" target="_blank"><div class="share-icon-w" style="background:#0088cc;"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
         </div>
     </div>
 </div>
@@ -202,7 +202,7 @@
     const db = firebase.database();
 
     const ONESIGNAL_APP_ID = "49c9df81-e12d-4f78-84e0-11266a6ab504";
-    let matchDatabase = []; // Initialized as Array
+    let matchDatabase = [];
     let currentFilter = 'All';
     const video = document.getElementById('main-video');
 
@@ -211,14 +211,7 @@
     function loadFromFirebase() { 
         db.ref('matches').on('value', snap => { 
             let data = snap.val();
-            // Critical Fix: Ensure matchDatabase is ALWAYS an Array
-            if (!data) {
-                matchDatabase = [];
-            } else if (Array.isArray(data)) {
-                matchDatabase = data;
-            } else {
-                matchDatabase = Object.values(data);
-            }
+            matchDatabase = Array.isArray(data) ? data : (data ? Object.values(data) : []);
             refreshUI(); 
             if(document.getElementById('admin-panel').style.display === 'block') renderAdminList(); 
         }); 
@@ -234,11 +227,33 @@
         return oldVal || "";
     }
 
+    // --- SECURE NOTIFICATION LOGIC ---
+    async function sendPushNotification(t1, t2, userKey) {
+        if(!userKey) return;
+        
+        const data = {
+            app_id: ONESIGNAL_APP_ID,
+            included_segments: ["All"],
+            headings: { "en": "SportSync Live 🏏" },
+            contents: { "en": `Live Now: ${t1} vs ${t2}. Watch HD now!` }
+        };
+
+        try {
+            const response = await fetch("https://onesignal.com/api/v1/notifications", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json; charset=utf-8", 
+                    "Authorization": "Basic " + userKey.trim() 
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if(result.id) alert("Notification Sent to Users! 🚀");
+        } catch (e) { console.error("Push Error:", e); }
+    }
+
     async function saveMatch() {
         try {
-            // FIX: Always treat matchDatabase as Array before pushing
-            if (!Array.isArray(matchDatabase)) matchDatabase = [];
-
             const idx = parseInt(document.getElementById('edit-index').value);
             const pushKey = document.getElementById('m-push-key').value;
             let links = [];
@@ -246,36 +261,24 @@
                 const n = g.querySelector('.s-name').value, u = g.querySelector('.s-url').value;
                 if(n && u) links.push({name: n, url: u});
             });
-            if(links.length === 0) return alert("దయచేసి సర్వర్ వివరాలు ఇవ్వండి!");
+            if(links.length === 0) return alert("Add Link!");
 
             const oldMatch = (idx > -1 && matchDatabase[idx]) ? matchDatabase[idx] : {};
             const mObj = {
-                cat: document.getElementById('m-cat').value, 
-                t1: document.getElementById('m-t1').value, 
-                t2: document.getElementById('m-t2').value,
+                cat: document.getElementById('m-cat').value, t1: document.getElementById('m-t1').value, t2: document.getElementById('m-t2').value,
                 t1_img: await getImg('m-t1-file', 'm-t1-url', oldMatch.t1_img),
                 t2_img: await getImg('m-t2-file', 'm-t2-url', oldMatch.t2_img),
                 card: await getImg('m-card-file', 'm-card-url', oldMatch.card),
                 links, time: document.getElementById('m-time').value || "", isLive: document.getElementById('m-live').checked
             };
 
+            // Notification Trigger
             if(mObj.isLive && !oldMatch.isLive && pushKey) {
-                fetch("https://onesignal.com/api/v1/notifications", {
-                    method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Basic " + pushKey },
-                    body: JSON.stringify({ app_id: ONESIGNAL_APP_ID, included_segments: ["All"], headings: {"en":"SportSync Live 🏏"}, contents: {"en":`Live Now: ${mObj.t1} vs ${mObj.t2}. Watch HD!`} })
-                });
+                await sendPushNotification(mObj.t1, mObj.t2, pushKey);
             }
 
-            if(idx > -1) {
-                matchDatabase[idx] = mObj;
-            } else {
-                matchDatabase.push(mObj);
-            }
-            
-            db.ref('matches').set(matchDatabase).then(() => { 
-                alert("Saved to Cloud! ✅"); 
-                resetAdminForm(); 
-            });
+            if(idx > -1) matchDatabase[idx] = mObj; else matchDatabase.push(mObj);
+            db.ref('matches').set(matchDatabase).then(() => { alert("Saved to Cloud! ✅"); resetAdminForm(); });
 
         } catch (e) { alert("Error: " + e.message); }
     }
@@ -323,35 +326,22 @@
     }
 
     function deleteMatch(i) { if(confirm("Delete from Cloud?")) { matchDatabase.splice(i, 1); db.ref('matches').set(matchDatabase); } }
-    
     function editMatch(i) { 
         const m = matchDatabase[i]; 
-        document.getElementById('edit-index').value = i; 
-        document.getElementById('m-cat').value = m.cat; 
-        document.getElementById('m-t1').value = m.t1; 
-        document.getElementById('m-t2').value = m.t2; 
-        document.getElementById('m-live').checked = m.isLive; 
-        document.getElementById('m-time').value = m.time;
+        document.getElementById('edit-index').value = i; document.getElementById('m-cat').value = m.cat; document.getElementById('m-t1').value = m.t1; document.getElementById('m-t2').value = m.t2; document.getElementById('m-live').checked = m.isLive; document.getElementById('m-time').value = m.time;
         const container = document.getElementById('links-container'); 
         container.innerHTML = m.links.map((l, idx) => `<div class="link-input-group">${idx > 0 ? '<div class="del-link-btn" onclick="this.parentElement.remove()">×</div>' : ''}<div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" value="${l.name}"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" value="${l.url}"></div></div></div>`).join('');
         document.getElementById('cancel-edit-btn').style.display = 'block'; 
-        document.getElementById('admin-panel').scrollTo({top: 400, behavior: 'smooth'});
     }
     
     function resetAdminForm() { 
-        document.getElementById('edit-index').value = "-1"; 
-        document.getElementById('m-live').checked = false; 
-        document.getElementById('m-t1').value = ""; document.getElementById('m-t2').value = ""; 
-        document.getElementById('m-push-key').value = "";
-        document.getElementById('cancel-edit-btn').style.display = 'none'; 
+        document.getElementById('edit-index').value = "-1"; document.getElementById('m-live').checked = false; document.getElementById('m-t1').value = ""; document.getElementById('m-t2').value = ""; document.getElementById('m-push-key').value = ""; document.getElementById('cancel-edit-btn').style.display = 'none'; 
         document.getElementById('links-container').innerHTML = '<div class="link-input-group"><div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" placeholder="URL"></div></div></div>';
         renderAdminList(); 
     }
     
     function addNewLinkField() { 
-        const div = document.createElement('div'); 
-        div.className = "link-input-group"; 
-        div.innerHTML = `<div class="del-link-btn" onclick="this.parentElement.remove()">×</div><div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" placeholder="URL"></div></div>`; 
+        const div = document.createElement('div'); div.className = "link-input-group"; div.innerHTML = `<div class="del-link-btn" onclick="this.parentElement.remove()">×</div><div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" placeholder="URL"></div></div>`; 
         document.getElementById('links-container').appendChild(div); 
     }
     
@@ -360,7 +350,13 @@
     function filterData(c, btn) { currentFilter = c; document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); refreshUI(); }
     function closePlayer() { document.getElementById('player-layer').style.display = 'none'; video.pause(); }
     function closeLink() { document.getElementById('link-overlay').style.display = 'none'; }
-    function openShareSheet() { document.getElementById('share-sheet-overlay').classList.add('show'); }
+    function openShareSheet() { 
+        const appUrl = "https://play.google.com/store/apps/details?id=starsports.aplitob";
+        const shareText = encodeURIComponent(`Watch Live HD Cricket on SportSync Live! 🏏\n${appUrl}`);
+        document.getElementById('share-wa').href = `https://api.whatsapp.com/send?text=${shareText}`;
+        document.getElementById('share-tg').href = `https://telegram.me/share/url?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent('Watch HD Cricket!')}`;
+        document.getElementById('share-sheet-overlay').classList.add('show'); 
+    }
     function closeShareSheet() { document.getElementById('share-sheet-overlay').classList.remove('show'); }
     function searchFn() { 
         let val = document.getElementById('searchInput').value.toLowerCase(); 
