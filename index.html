@@ -12,7 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
     
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -55,9 +54,9 @@
         .live-tag { background: #e50914; color: white; font-size: 10px; padding: 3px 12px; border-radius: 6px; font-weight: bold; animation: blink 1.2s infinite; }
         .watch-btn-overlay { background: var(--accent); color: black; border: none; padding: 6px 18px; border-radius: 20px; font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 5px; }
 
-        /* ADMIN PANEL DESIGN */
+        /* ULTRA-MODERN ADMIN PANEL DESIGN */
         #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 30000; padding: 0; overflow-y: auto; color: #f1f5f9; }
-        .admin-header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .admin-header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         .admin-header h4 { margin: 0; font-size: 18px; color: #38bdf8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         .admin-close { background: rgba(244, 63, 94, 0.1); border: 1px solid #f43f5e; color: #f43f5e; border-radius: 10px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border:none; }
         .admin-content { padding: 20px; }
@@ -69,27 +68,27 @@
         .admin-input, .admin-select { background: #0f172a !important; border: 1px solid #334155 !important; color: #f8fafc !important; font-size: 14px !important; padding: 14px !important; border-radius: 12px !important; }
         
         .link-input-group { background: #1a2235; padding: 15px; border-radius: 14px; margin-top: 12px; border: 1px solid #334155; position: relative; }
-        .del-link-btn { position: absolute; top: -10px; right: -10px; background: #f43f5e; color: white; border-radius: 50%; width: 26px; height: 26px; border: 2px solid #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; line-height: 1; }
+        .del-link-btn { position: absolute; top: -10px; right: -10px; background: #f43f5e; color: white; border-radius: 50%; width: 26px; height: 26px; border: 2px solid #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .btn-add-server { background: rgba(56, 189, 248, 0.05); border: 2px dashed #38bdf8; color: #38bdf8; font-weight: 700; padding: 14px; border-radius: 12px; width: 100%; margin-top: 5px; }
         .admin-footer-btns { position: sticky; bottom: 0; background: #0f172a; padding: 20px; border-top: 1px solid #334155; display: flex; gap: 12px; }
         .btn-save { background: #38bdf8; color: #0f172a; border: none; font-weight: 800; font-size: 16px; padding: 16px; border-radius: 14px; flex-grow: 1; }
 
         /* Overlays */
-        #share-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 40000; justify-content: center; align-items: flex-end; }
-        #share-sheet-overlay.show { display: flex; }
-        #share-sheet { background: #111; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; transform: translateY(100%); transition: transform 0.3s ease-out; }
-        #share-sheet-overlay.show #share-sheet { transform: translateY(0); }
-        .share-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
-        .share-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none !important; }
-        .share-icon-w { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; }
-        .sh-ws { background-color: #25D366; } .sh-tg { background-color: #0088cc; } .sh-fb { background-color: #3b5998; } .sh-ms { background-color: #0078FF; }
-
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
         .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         video { width: 100%; max-height: 100%; }
         .link-row { background: #0e2522; padding: 15px; margin: 10px; border-radius: 10px; border: 1px solid #1c3631; display: flex; align-items: center; cursor: pointer; }
         #link-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:15000; }
+        
+        #share-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 40000; justify-content: center; align-items: flex-end; }
+        #share-sheet-overlay.show { display: flex; }
+        #share-sheet { background: #111; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; transform: translateY(100%); transition: transform 0.3s ease-out; }
+        #share-sheet-overlay.show #share-sheet { transform: translateY(0); }
+        .share-header { display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
+        .share-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none !important; }
+        .share-icon-w { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; }
+        .sh-ws { background-color: #25D366; } .sh-tg { background-color: #0088cc; } .sh-fb { background-color: #3b5998; } .sh-ms { background-color: #0078FF; }
     </style>
 </head>
 <body onclick="hideSearchOnClick(event)">
@@ -141,16 +140,16 @@
             <label class="admin-label">League/Category</label>
             <select id="m-cat" class="form-select admin-select"><option value="Cricket">Cricket</option><option value="IPL">IPL</option></select>
             <label class="admin-label mt-3">Banner/Card Image</label>
-            <input type="file" id="m-card-file" class="form-control admin-input mb-2">
+            <input type="file" id="m-card-file" class="form-control admin-input mb-2" accept="image/*">
             <input type="text" id="m-card-url" class="form-control admin-input" placeholder="CDN Image URL (Optional)">
         </div>
 
         <div class="row">
             <div class="col-6">
-                <div class="form-group-card"><label class="admin-label">Team One</label><input type="text" id="m-t1" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t1-file" class="form-control admin-input mb-2"><input type="text" id="m-t1-url" class="form-control admin-input" placeholder="Logo Link"></div>
+                <div class="form-group-card"><label class="admin-label">Team One</label><input type="text" id="m-t1" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t1-file" class="form-control admin-input mb-2" accept="image/*"><input type="text" id="m-t1-url" class="form-control admin-input" placeholder="Logo Link"></div>
             </div>
             <div class="col-6">
-                <div class="form-group-card"><label class="admin-label">Team Two</label><input type="text" id="m-t2" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t2-file" class="form-control admin-input mb-2"><input type="text" id="m-t2-url" class="form-control admin-input" placeholder="Logo Link"></div>
+                <div class="form-group-card"><label class="admin-label">Team Two</label><input type="text" id="m-t2" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t2-file" class="form-control admin-input mb-2" accept="image/*"><input type="text" id="m-t2-url" class="form-control admin-input" placeholder="Logo Link"></div>
             </div>
         </div>
 
@@ -178,13 +177,13 @@
     </div>
 </div>
 
-<div id="link-overlay">
-    <div class="topbar"><i class="fa-solid fa-arrow-left" onclick="closeLink()"></i><h4 id="link-title">Server</h4><i></i></div>
-    <div id="link-area" class="mt-4"></div>
-</div>
-
 <div id="player-layer">
     <div class="v-wrap" id="v-container"><video id="main-video" playsinline></video><div class="p-top" style="position:absolute;top:0;width:100%;padding:20px;z-index:1000;"><i class="fa-solid fa-arrow-left" onclick="closePlayer()" style="font-size:24px; cursor:pointer;"></i></div></div>
+</div>
+
+<div id="link-overlay">
+    <div class="topbar"><i class="fa-solid fa-arrow-left" onclick="closeLink()"></i><h4 id="link-title">Server Selection</h4><i></i></div>
+    <div id="link-area" class="mt-4"></div>
 </div>
 
 <div id="share-sheet-overlay" onclick="closeShareSheet()">
@@ -211,7 +210,14 @@
 
     window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.display='none'; loadFromFirebase(); }, 2500); };
 
-    function loadFromFirebase() { db.ref('matches').on('value', snap => { matchDatabase = snap.val() || []; refreshUI(); if(document.getElementById('admin-panel').style.display === 'block') renderAdminList(); }); }
+    function loadFromFirebase() { 
+        db.ref('matches').on('value', snap => { 
+            let data = snap.val();
+            matchDatabase = Array.isArray(data) ? data : (data ? Object.values(data) : []);
+            refreshUI(); 
+            if(document.getElementById('admin-panel').style.display === 'block') renderAdminList(); 
+        }); 
+    }
 
     async function compressImg(file) { return new Promise(res => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = e => { const img = new Image(); img.src = e.target.result; img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 250; canvas.getContext('2d').drawImage(img, 0, 0, 400, 250); res(canvas.toDataURL('image/jpeg', 0.7)); }; }; }); }
 
@@ -234,7 +240,7 @@
             });
             if(links.length === 0) return alert("దయచేసి సర్వర్ వివరాలు ఇవ్వండి!");
 
-            const oldMatch = idx > -1 ? matchDatabase[idx] : {};
+            const oldMatch = (idx > -1 && matchDatabase[idx]) ? matchDatabase[idx] : {};
             const mObj = {
                 cat: document.getElementById('m-cat').value, 
                 t1: document.getElementById('m-t1').value, 
