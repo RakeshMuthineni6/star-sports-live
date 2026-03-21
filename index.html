@@ -8,9 +8,11 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1895449179923280" crossorigin="anonymous"></script>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
     
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -44,8 +46,6 @@
         .match-card { position: relative; margin: 15px; border-radius: 20px; overflow: hidden; height: 210px; border: 1px solid #1c3631; box-shadow: 0 10px 20px rgba(0,0,0,0.5); cursor: pointer; }
         .m-card-img { width: 100%; height: 100%; object-fit: cover; }
         .card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,1) 15%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.6) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 15px; }
-        .card-top-row { display: flex; justify-content: space-between; align-items: center; }
-        .card-cat-text { color: white; font-size: 11px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; opacity: 0.9; }
         .card-mid-row { display: flex; justify-content: space-around; align-items: center; margin-top: 5px; }
         .team-box { text-align: center; width: 35%; }
         .team-box img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); margin-bottom: 5px; background: black; }
@@ -53,42 +53,26 @@
         .vs-text { font-size: 22px; font-weight: 900; color: var(--sky); font-style: italic; text-shadow: 0 0 10px rgba(0, 212, 255, 0.4); }
         .card-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
         .live-tag { background: #e50914; color: white; font-size: 10px; padding: 3px 12px; border-radius: 6px; font-weight: bold; animation: blink 1.2s infinite; }
-        .time-text { color: var(--accent); font-size: 10px; font-weight: bold; }
         .watch-btn-overlay { background: var(--accent); color: black; border: none; padding: 6px 18px; border-radius: 20px; font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 5px; }
 
-        @keyframes blink { 50% { opacity: 0.5; } }
-
-        /* ULTRA-MODERN ADMIN PANEL DESIGN (NEW COLORS) */
+        /* ULTRA-MODERN ADMIN PANEL DESIGN */
         #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 30000; padding: 0; overflow-y: auto; color: #f1f5f9; }
         .admin-header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         .admin-header h4 { margin: 0; font-size: 18px; color: #38bdf8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         .admin-close { background: rgba(244, 63, 94, 0.1); border: 1px solid #f43f5e; color: #f43f5e; border-radius: 10px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; }
-        
         .admin-content { padding: 20px; }
         .admin-section-title { font-size: 13px; text-transform: uppercase; color: #94a3b8; font-weight: 800; margin-bottom: 15px; display: block; letter-spacing: 1.5px; }
-        
         .admin-item { background: #1e293b; padding: 16px; border-radius: 14px; border: 1px solid #334155; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .admin-item span { font-size: 14px; font-weight: 600; color: #e2e8f0; }
-        .admin-item i { font-size: 18px; cursor: pointer; }
-        
         .form-group-card { background: #1e293b; padding: 20px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 22px; transition: 0.3s; }
-        .form-group-card:focus-within { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.1); }
-        
         .admin-label { font-size: 12px; color: #38bdf8; font-weight: 700; margin-bottom: 8px; display: block; text-transform: uppercase; }
-        
         .admin-input, .admin-select { background: #0f172a !important; border: 1px solid #334155 !important; color: #f8fafc !important; font-size: 14px !important; padding: 14px !important; border-radius: 12px !important; }
-        .admin-input::placeholder { color: #475569; }
-        
         .link-input-group { background: #1a2235; padding: 15px; border-radius: 14px; margin-top: 12px; border: 1px solid #334155; position: relative; }
-        .del-link-btn { position: absolute; top: -10px; right: -10px; background: #f43f5e; color: white; border-radius: 50%; width: 26px; height: 26px; border: 2px solid #1e293b; }
-
-        .btn-add-server { background: rgba(56, 189, 248, 0.05); border: 2px dashed #38bdf8; color: #38bdf8; font-weight: 700; padding: 14px; border-radius: 12px; width: 100%; margin-top: 5px; }
-
+        .del-link-btn { position: absolute; top: -10px; right: -10px; background: #f43f5e; color: white; border-radius: 50%; width: 26px; height: 26px; border: 2px solid #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
+        .btn-add-server { background: rgba(56, 189, 248, 0.05); border: 2px dashed #38bdf8; color: #38bdf8; font-weight: 700; padding: 14px; border-radius: 12px; width: 100%; margin-top: 5px; text-transform: uppercase; }
         .admin-footer-btns { position: sticky; bottom: 0; background: #0f172a; padding: 20px; border-top: 1px solid #334155; display: flex; gap: 12px; }
-        .btn-save { background: #38bdf8; color: #0f172a; border: none; font-weight: 800; font-size: 16px; padding: 16px; border-radius: 14px; flex-grow: 1; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4); }
-        .btn-cancel-edit { background: #334155; color: #f1f5f9; border: none; font-weight: 700; padding: 16px; border-radius: 14px; }
+        .btn-save { background: #38bdf8; color: #0f172a; border: none; font-weight: 800; font-size: 16px; padding: 16px; border-radius: 14px; flex-grow: 1; text-transform: uppercase; }
 
-        /* General Sheet & Overlays */
+        /* General Overlays */
         #share-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 40000; justify-content: center; align-items: flex-end; }
         #share-sheet-overlay.show { display: flex; }
         #share-sheet { background: #111; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; transform: translateY(100%); transition: transform 0.3s ease-out; }
@@ -97,21 +81,11 @@
         .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
         .share-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none !important; }
         .share-icon-w { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; }
-        .share-item span { color: #aaa; font-size: 12px; }
         .sh-ws { background-color: #25D366; } .sh-tg { background-color: #0088cc; } .sh-fb { background-color: #3b5998; } .sh-ms { background-color: #0078FF; }
 
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
         .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         video { width: 100%; max-height: 100%; }
-        .p-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); display: flex; flex-direction: column; justify-content: space-between; z-index: 20010; transition: 0.4s; pointer-events: none; }
-        .p-ui.hide { opacity: 0; }
-        .p-top, .p-mid i, .p-bottom { pointer-events: auto; }
-        .p-top { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); }
-        .p-mid { display: flex; justify-content: center; gap: 60px; font-size: 45px; color: white; align-items: center; }
-        .p-bottom { padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
-        .gesture-box { position: absolute; top: 50%; transform: translateY(-50%); width: 45px; height: 160px; background: rgba(0,0,0,0.6); border-radius: 30px; display: none; flex-direction: column-reverse; align-items: center; padding: 12px; z-index: 20020; pointer-events: none; }
-        .bar-fill { width: 6px; background: var(--accent); border-radius: 3px; height: 0%; transition: 0.1s; }
-        #br-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; pointer-events: none; z-index: 19999; opacity: 0; }
         .link-row { background: #0e2522; padding: 15px; margin: 10px; border-radius: 10px; border: 1px solid #1c3631; display: flex; align-items: center; cursor: pointer; }
         #link-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:15000; }
     </style>
@@ -119,24 +93,18 @@
 <body onclick="hideSearchOnClick(event)">
 
 <div id="br-mask"></div>
-
-<div id="splash-screen">
-    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGEMIb2NLYINkRimbJUxmjfY_GeETgfph0hH2csK7sYmxC4upohieqkyB-43fg_HoQmgHhp0aNSLy2aGfy_fJI7uIReIAqWMfC8T1L65oTbMMAaRDBKwcLDxSM5Fi9SjvGyGVab4BGC85pmFFnpnXIyeOsd3hcNs5Vg0Zz6msAGXX8HUg7OUOac_skmn8/s2048/Gemini_Generated_Image_a89yqoa89yqoa89y.png" class="splash-logo">
-    <div style="font-weight:bold; font-size:24px; margin-top:10px;">SportSync Live</div>
-    <div class="loader-dot"></div>
-</div>
+<div id="splash-screen"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGEMIb2NLYINkRimbJUxmjfY_GeETgfph0hH2csK7sYmxC4upohieqkyB-43fg_HoQmgHhp0aNSLy2aGfy_fJI7uIReIAqWMfC8T1L65oTbMMAaRDBKwcLDxSM5Fi9SjvGyGVab4BGC85pmFFnpnXIyeOsd3hcNs5Vg0Zz6msAGXX8HUg7OUOac_skmn8/s2048/Gemini_Generated_Image_a89yqoa89yqoa89y.png" class="splash-logo"><div class="loader-dot"></div></div>
 
 <div id="app-view">
     <div class="topbar">
         <h4>SportSync Live</h4>
         <div class="top-icons">
             <i class="fa-solid fa-share-nodes me-3" onclick="openShareSheet()"></i>
-            <i class="fa-solid fa-rotate-right me-3" onclick="refreshData()"></i>
-            <i class="fa-solid fa-magnifying-glass me-3" id="searchTrigger" onclick="toggleSearch(event)"></i>
+            <i class="fa-solid fa-rotate-right me-3" onclick="loadFromFirebase()"></i>
+            <i class="fa-solid fa-magnifying-glass me-3" onclick="toggleSearch(event)"></i>
             <i class="fa-solid fa-lock" onclick="openAdmin()"></i>
         </div>
     </div>
-    
     <div class="search-container" id="searchBox" onclick="event.stopPropagation()"><input type="text" id="searchInput" placeholder="Search matches..." onkeyup="searchFn()"></div>
     
     <div class="filters">
@@ -146,43 +114,15 @@
     </div>
 
     <div style="text-align: center; margin-bottom: 10px;">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-1895449179923280"
-             data-ad-slot="6999248761"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1895449179923280" data-ad-slot="6999248761" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
     </div>
 
     <div id="match-list"></div>
 </div>
 
-<div id="share-sheet-overlay" onclick="closeShareSheet()">
-    <div id="share-sheet" onclick="event.stopPropagation()">
-        <div class="share-header"><h5>Share App Via</h5><i class="fa-solid fa-times fs-4" onclick="closeShareSheet()"></i></div>
-        <div class="share-grid">
-            <a href="#" class="share-item" id="share-wa" target="_blank"><div class="share-icon-w sh-ws"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
-            <a href="#" class="share-item" id="share-tg" target="_blank"><div class="share-icon-w sh-tg"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
-            <a href="#" class="share-item" id="share-fb" target="_blank"><div class="share-icon-w sh-fb"><i class="fa-brands fa-facebook-f"></i></div><span>Facebook</span></a>
-            <a href="#" class="share-item" id="share-ms" target="_blank"><div class="share-icon-w sh-ms"><i class="fa-brands fa-facebook-messenger"></i></div><span>Messenger</span></a>
-        </div>
-    </div>
-</div>
-
-<div id="link-overlay">
-    <div class="topbar"><i class="fa-solid fa-arrow-left" onclick="closeLink()"></i><h4 id="link-title">Server Selection</h4><i></i></div>
-    <div id="link-area" class="mt-4"></div>
-</div>
-
 <div id="admin-panel">
-    <div class="admin-header">
-        <h4>Admin Control</h4>
-        <button class="admin-close" onclick="closeAdmin()"><i class="fa-solid fa-times"></i></button>
-    </div>
-    
+    <div class="admin-header"><h4>Admin Control</h4><button class="admin-close" onclick="closeAdmin()"><i class="fa-solid fa-times"></i></button></div>
     <div class="admin-content">
         <span class="admin-section-title">Active Database</span>
         <div id="admin-items-list" class="mb-4"></div>
@@ -190,10 +130,14 @@
         <span class="admin-section-title" id="form-title">Create Match Entry</span>
         <input type="hidden" id="edit-index" value="-1">
         
+        <div class="form-group-card" style="border: 1px solid #f7d417;">
+            <label class="admin-label" style="color:#f7d417;">OneSignal REST API Key</label>
+            <input type="password" id="m-push-key" class="form-control admin-input" placeholder="Paste Key only to send Push">
+        </div>
+
         <div class="form-group-card">
             <label class="admin-label">League/Category</label>
             <select id="m-cat" class="form-select admin-select"><option value="Cricket">Cricket</option><option value="IPL">IPL</option></select>
-            
             <label class="admin-label mt-3">Banner/Card Image</label>
             <input type="file" id="m-card-file" class="form-control admin-input mb-2" accept="image/*">
             <input type="text" id="m-card-url" class="form-control admin-input" placeholder="CDN Image URL (Optional)">
@@ -201,22 +145,10 @@
 
         <div class="row">
             <div class="col-6">
-                <div class="form-group-card">
-                    <label class="admin-label">Team One</label>
-                    <input type="text" id="m-t1" class="form-control admin-input">
-                    <label class="admin-label mt-3">Logo</label>
-                    <input type="file" id="m-t1-file" class="form-control admin-input mb-2" accept="image/*">
-                    <input type="text" id="m-t1-url" class="form-control admin-input" placeholder="Logo Link">
-                </div>
+                <div class="form-group-card"><label class="admin-label">Team One</label><input type="text" id="m-t1" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t1-file" class="form-control admin-input mb-2" accept="image/*"><input type="text" id="m-t1-url" class="form-control admin-input" placeholder="Logo Link"></div>
             </div>
             <div class="col-6">
-                <div class="form-group-card">
-                    <label class="admin-label">Team Two</label>
-                    <input type="text" id="m-t2" class="form-control admin-input">
-                    <label class="admin-label mt-3">Logo</label>
-                    <input type="file" id="m-t2-file" class="form-control admin-input mb-2" accept="image/*">
-                    <input type="text" id="m-t2-url" class="form-control admin-input" placeholder="Logo Link">
-                </div>
+                <div class="form-group-card"><label class="admin-label">Team Two</label><input type="text" id="m-t2" class="form-control admin-input"><label class="admin-label mt-3">Logo</label><input type="file" id="m-t2-file" class="form-control admin-input mb-2" accept="image/*"><input type="text" id="m-t2-url" class="form-control admin-input" placeholder="Logo Link"></div>
             </div>
         </div>
 
@@ -234,93 +166,53 @@
         </div>
 
         <div class="form-group-card">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <label class="admin-label m-0">Kick-off Time</label>
-                <input type="datetime-local" id="m-time" class="form-control admin-input" style="width: 180px;">
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-                <label class="admin-label m-0">Live Status</label>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="m-live" style="width: 45px; height: 22px; cursor: pointer;">
-                </div>
-            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3"><label class="admin-label m-0">Kick-off Time</label><input type="datetime-local" id="m-time" class="form-control admin-input" style="width: 180px;"></div>
+            <div class="d-flex justify-content-between align-items-center"><label class="admin-label m-0">Live Status</label><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="m-live" style="width: 45px; height: 22px; cursor: pointer;"></div></div>
         </div>
     </div>
-
     <div class="admin-footer-btns">
-        <button class="btn-cancel-edit" id="cancel-edit-btn" style="display:none;" onclick="resetAdminForm()">DISCARD</button>
+        <button class="btn btn-secondary p-3 rounded-4 me-2" id="cancel-edit-btn" style="display:none;" onclick="resetAdminForm()">DISCARD</button>
         <button class="btn-save" onclick="saveMatch()" id="save-btn">PUSH TO CLOUD</button>
     </div>
 </div>
 
 <div id="player-layer">
-    <div class="v-wrap" id="v-container">
-        <video id="main-video" playsinline></video>
-        <div id="left-zone" style="position:absolute;left:0;width:40%;height:100%;z-index:20005;"></div>
-        <div id="right-zone" style="position:absolute;right:0;width:40%;height:100%;z-index:20005;"></div>
-        <div id="bright-box" class="gesture-box" style="left:20px;"><div class="bar-fill" id="b-fill"></div><i class="fa-solid fa-sun mt-2"></i></div>
-        <div id="vol-box" class="gesture-box" style="right:20px;"><div class="bar-fill" id="v-fill"></div><i class="fa-solid fa-volume-high mt-2"></i></div>
-        <div class="p-ui" id="player-controls">
-            <div class="p-top"><i class="fa-solid fa-arrow-left" onclick="closePlayer()"></i><span id="v-title">SportSync Live</span><i class="fa-solid fa-lock-open" id="lock-btn" onclick="toggleLock(event)"></i></div>
-            <div class="p-mid"><i class="fa-solid fa-rotate-left" onclick="skip(-10, event)"></i><i class="fa-solid fa-play" id="p-play" onclick="togglePlay(event)"></i><i class="fa-solid fa-rotate-right" onclick="skip(10, event)"></i></div>
-            <div class="p-bottom"><input type="range" id="seek-slider" min="0" max="100" step="0.1" style="width:100%; accent-color:#f7d417;"><div class="d-flex justify-content-between mt-2" style="font-size:12px;"><span id="time-lbl">00:00 / 00:00</span><i class="fa-solid fa-expand" onclick="toggleFS(event)"></i></div></div>
+    <div class="v-wrap" id="v-container"><video id="main-video" playsinline></video><div class="p-top" style="position:absolute;top:0;width:100%;padding:20px;z-index:1000;"><i class="fa-solid fa-arrow-left" onclick="closePlayer()" style="font-size:24px; cursor:pointer;"></i></div></div>
+</div>
+
+<div id="link-overlay">
+    <div class="topbar"><i class="fa-solid fa-arrow-left" onclick="closeLink()"></i><h4 id="link-title">Server Selection</h4><i></i></div>
+    <div id="link-area" class="mt-4"></div>
+</div>
+
+<div id="share-sheet-overlay" onclick="closeShareSheet()">
+    <div id="share-sheet" onclick="event.stopPropagation()">
+        <div class="share-header"><h5>Share App Via</h5><i class="fa-solid fa-times fs-4" onclick="closeShareSheet()"></i></div>
+        <div class="share-grid">
+            <a href="#" class="share-item" id="share-wa" target="_blank"><div class="share-icon-w sh-ws"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
+            <a href="#" class="share-item" id="share-tg" target="_blank"><div class="share-icon-w sh-tg"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
+            <a href="#" class="share-item" id="share-fb" target="_blank"><div class="share-icon-w sh-fb"><i class="fa-brands fa-facebook-f"></i></div><span>Facebook</span></a>
+            <a href="#" class="share-item" id="share-ms" target="_blank"><div class="share-icon-w sh-ms"><i class="fa-brands fa-facebook-messenger"></i></div><span>Messenger</span></a>
         </div>
     </div>
 </div>
 
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyDid9PyTmzKwrM0wLERsKIOf2GEdu9tp5M", authDomain: "sportsynclive-3ef2c.firebaseapp.com", projectId: "sportsynclive-3ef2c", storageBucket: "sportsynclive-3ef2c.firebasestorage.app", messagingSenderId: "433748656595", appId: "1:433748656595:web:ae73836ff99dfae723ef26", measurementId: "G-VBQ232G14H" };
-    firebase.initializeApp(firebaseConfig); firebase.analytics();
+    const firebaseConfig = { apiKey: "AIzaSyDid9PyTmzKwrM0wLERsKIOf2GEdu9tp5M", authDomain: "sportsynclive-3ef2c.firebaseapp.com", projectId: "sportsynclive-3ef2c", storageBucket: "sportsynclive-3ef2c.firebasestorage.app", messagingSenderId: "433748656595", appId: "1:433748656595:web:ae73836ff99dfae723ef26" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    let matchDatabase = JSON.parse(localStorage.getItem('matchVault')) || [];
+    const ONESIGNAL_APP_ID = "49c9df81-e12d-4f78-84e0-11266a6ab504";
+    let matchDatabase = [];
     let currentFilter = 'All';
     const video = document.getElementById('main-video');
-    let hls = null, isLocked = false, brightness = 1.0;
 
-    window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.display='none'; refreshData(); }, 2500); };
+    window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.display='none'; loadFromFirebase(); }, 2500); };
 
-    function openShareSheet() {
-        const appUrl = "https://play.google.com/store/apps/details?id=starsports.aplitob";
-        const shareText = encodeURIComponent(`Watch Live Cricket & IPL in HD! Download SportSync Live App now:\n${appUrl}`);
-        document.getElementById('share-wa').href = `https://api.whatsapp.com/send?text=${shareText}`;
-        document.getElementById('share-tg').href = `https://telegram.me/share/url?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent('Watch Live Cricket & IPL in HD!')}`;
-        document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}`;
-        document.getElementById('share-ms').href = `fb-messenger://share/?link=${encodeURIComponent(appUrl)}`;
-        document.getElementById('share-sheet-overlay').classList.add('show');
-    }
-    function closeShareSheet() { document.getElementById('share-sheet-overlay').classList.remove('show'); }
+    function loadFromFirebase() { db.ref('matches').on('value', snap => { matchDatabase = snap.val() || []; refreshUI(); }); }
 
-    function toggleSearch(e) { e.stopPropagation(); let s = document.getElementById('searchBox'); s.style.display = (s.style.display==='block')?'none':'block'; if(s.style.display==='block') document.getElementById('searchInput').focus(); }
-    function hideSearchOnClick(e) { let s = document.getElementById('searchBox'); if(s.style.display === 'block') s.style.display = 'none'; }
-    function openAdmin() { if(prompt("Password:") === "Tecra@123") { document.getElementById('admin-panel').style.display='block'; renderAdminList(); } }
-    function closeAdmin() { document.getElementById('admin-panel').style.display='none'; resetAdminForm(); }
-    
-    function renderAdminList() { const list = document.getElementById('admin-items-list'); list.innerHTML = matchDatabase.map((m, i) => `<div class="admin-item"><span>${m.t1} vs ${m.t2}</span><div><i class="fa-solid fa-pen-to-square text-info me-3" onclick="editMatch(${i})"></i><i class="fa-solid fa-trash text-danger" onclick="deleteMatch(${i})"></i></div></div>`).join(''); }
-    function deleteMatch(i) { if(confirm("Delete?")) { matchDatabase.splice(i, 1); saveVault(); renderAdminList(); refreshData(); } }
-    
-    function editMatch(i) { 
-        const m = matchDatabase[i]; 
-        document.getElementById('edit-index').value = i; 
-        document.getElementById('form-title').innerText = "Update Match Entry"; 
-        document.getElementById('save-btn').innerText = "PUSH UPDATES"; 
-        document.getElementById('cancel-edit-btn').style.display = "block"; 
-        document.getElementById('m-cat').value = m.cat; 
-        document.getElementById('m-t1').value = m.t1; 
-        document.getElementById('m-t2').value = m.t2; 
-        document.getElementById('m-time').value = m.time; 
-        document.getElementById('m-live').checked = m.isLive;
-        document.getElementById('m-card-url').value = m.card.startsWith('data:') ? '' : m.card;
-        document.getElementById('m-t1-url').value = m.t1_img.startsWith('data:') ? '' : m.t1_img;
-        document.getElementById('m-t2-url').value = m.t2_img.startsWith('data:') ? '' : m.t2_img;
-        const container = document.getElementById('links-container'); 
-        container.innerHTML = m.links.map((l, idx) => `<div class="link-input-group">${idx > 0 ? `<button class="del-link-btn" onclick="this.parentElement.remove()">×</button>` : ''}<div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" value="${l.name}"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" value="${l.url}"></div></div></div>`).join(''); 
-        document.getElementById('admin-panel').scrollTo({top: 400, behavior: 'smooth'});
-    }
+    async function compressImg(file) { return new Promise(res => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = e => { const img = new Image(); img.src = e.target.result; img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 250; canvas.getContext('2d').drawImage(img, 0, 0, 400, 250); res(canvas.toDataURL('image/jpeg', 0.7)); }; }; }); }
 
-    function addNewLinkField() { const div = document.createElement('div'); div.className = "link-input-group"; div.innerHTML = `<button class="del-link-btn" onclick="this.parentElement.remove()">×</button><div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" placeholder="URL"></div></div>`; document.getElementById('links-container').appendChild(div); }
-    
-    async function compressImg(file) { return new Promise(resolve => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = e => { const img = new Image(); img.src = e.target.result; img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 250; canvas.getContext('2d').drawImage(img, 0, 0, 400, 250); resolve(canvas.toDataURL('image/jpeg', 0.7)); }; }; }); }
-    
     async function getImg(fileId, urlId, oldVal) {
         const file = document.getElementById(fileId).files[0];
         const url = document.getElementById(urlId).value;
@@ -329,80 +221,91 @@
         return oldVal || "";
     }
 
-    async function saveMatch() { 
-        const idx = parseInt(document.getElementById('edit-index').value); 
-        let links = []; 
-        document.querySelectorAll('.link-input-group').forEach(g => { 
-            const n = g.querySelector('.s-name').value, u = g.querySelector('.s-url').value; 
-            if(n && u) links.push({name: n, url: u}); 
-        }); 
-        if(links.length === 0) return alert("Add Link!"); 
+    async function saveMatch() {
+        const idx = parseInt(document.getElementById('edit-index').value);
+        const pushKey = document.getElementById('m-push-key').value;
+        let links = [];
+        document.querySelectorAll('.link-input-group').forEach(g => {
+            const n = g.querySelector('.s-name').value, u = g.querySelector('.s-url').value;
+            if(n && u) links.push({name: n, url: u});
+        });
+        if(links.length === 0) return alert("Add Link!");
+
         const oldMatch = idx > -1 ? matchDatabase[idx] : {};
-        const mObj = { 
-            cat: document.getElementById('m-cat').value, t1: document.getElementById('m-t1').value, t2: document.getElementById('m-t2').value, 
+        const mObj = {
+            cat: document.getElementById('m-cat').value, t1: document.getElementById('m-t1').value, t2: document.getElementById('m-t2').value,
             t1_img: await getImg('m-t1-file', 'm-t1-url', oldMatch.t1_img),
             t2_img: await getImg('m-t2-file', 'm-t2-url', oldMatch.t2_img),
             card: await getImg('m-card-file', 'm-card-url', oldMatch.card),
-            links, time: document.getElementById('m-time').value, isLive: document.getElementById('m-live').checked 
-        }; 
-        if(idx > -1) matchDatabase[idx] = mObj; else matchDatabase.push(mObj); 
-        saveVault(); resetAdminForm(); refreshData(); 
+            links, time: document.getElementById('m-time').value, isLive: document.getElementById('m-live').checked
+        };
+
+        if(mObj.isLive && !oldMatch.isLive && pushKey) {
+            fetch("https://onesignal.com/api/v1/notifications", {
+                method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Basic " + pushKey },
+                body: JSON.stringify({ app_id: ONESIGNAL_APP_ID, included_segments: ["All"], headings: {"en":"SportSync Live 🏏"}, contents: {"en":`Live Now: ${mObj.t1} vs ${mObj.t2}. Watch HD now!`} })
+            });
+        }
+
+        if(idx > -1) matchDatabase[idx] = mObj; else matchDatabase.push(mObj);
+        db.ref('matches').set(matchDatabase).then(() => { alert("Cloud Synced!"); resetAdminForm(); });
     }
 
-    function saveVault() { localStorage.setItem('matchVault', JSON.stringify(matchDatabase)); }
-    function resetAdminForm() { 
-        document.getElementById('edit-index').value = "-1"; document.getElementById('form-title').innerText = "Create Match Entry"; document.getElementById('save-btn').innerText = "PUSH TO CLOUD"; document.getElementById('cancel-edit-btn').style.display = "none"; document.getElementById('m-t1').value = ""; document.getElementById('m-t2').value = ""; document.getElementById('m-time').value = ""; document.getElementById('m-live').checked = false; document.getElementById('m-card-url').value = ""; document.getElementById('m-t1-url').value = ""; document.getElementById('m-t2-url').value = ""; document.getElementById('m-card-file').value = ""; document.getElementById('m-t1-file').value = ""; document.getElementById('m-t2-file').value = ""; document.getElementById('links-container').innerHTML = `<div class="link-input-group"><div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" placeholder="URL"></div></div></div>`; renderAdminList(); 
-    }
-
-    function playStream(url, title) { closeLink(); document.getElementById('player-layer').style.display = 'block'; document.getElementById('v-title').innerText = title; if (Hls.isSupported()) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } else { video.src = url; video.play(); } }
-    function closePlayer() { document.getElementById('player-layer').style.display = 'none'; video.pause(); }
-    function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); }
-    function skip(v, e) { e.stopPropagation(); video.currentTime += v; }
-    function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
-    function toggleLock(e) { e.stopPropagation(); isLocked = !isLocked; document.getElementById('lock-btn').className = isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open'; document.getElementById('player-controls').classList.toggle('hide', isLocked); }
-    function filterData(c, btn) { currentFilter = c; document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); refreshData(); }
-    
-    function refreshData() { 
-        let filtered = currentFilter === 'All' ? matchDatabase : matchDatabase.filter(m => m.cat === currentFilter); 
-        const list = document.getElementById('match-list'); 
+    function refreshUI() {
+        let filtered = currentFilter === 'All' ? matchDatabase : matchDatabase.filter(m => m.cat === currentFilter);
+        const list = document.getElementById('match-list');
         list.innerHTML = filtered.map((m) => {
             const realIdx = matchDatabase.indexOf(m);
-            return `<div class="match-card" onclick="openLinksFromFiltered(${realIdx})">
-                ${m.card ? `<img src="${m.card}" class="m-card-img">` : '<div style="background:#222;height:100%"></div>'}
+            return `<div class="match-card" onclick="openLinks(${realIdx})">
+                <img src="${m.card}" class="m-card-img">
                 <div class="card-overlay">
-                    <div class="card-top-row"><div class="card-cat-text">${m.cat}</div></div>
-                    <div class="card-mid-row">
-                        <div class="team-box"><img src="${m.t1_img || ''}"><div>${m.t1}</div></div>
-                        <div class="vs-text">VS</div>
-                        <div class="team-box"><img src="${m.t2_img || ''}"><div>${m.t2}</div></div>
-                    </div>
-                    <div class="card-bottom-row">
-                        ${m.isLive ? '<div class="live-tag">LIVE</div>' : `<div class="time-text">${m.time ? m.time.replace('T', ' ') : ''}</div>`}
-                        <button class="watch-btn-overlay"><i class="fa-solid fa-play"></i> WATCH NOW</button>
-                    </div>
+                    <div class="card-mid-row"><div class="team-box"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-text">VS</div><div class="team-box"><img src="${m.t2_img}"><div>${m.t2}</div></div></div>
+                    <div class="card-bottom-row">${m.isLive ? '<div class="live-tag">LIVE</div>' : `<div>${m.time.replace('T', ' ')}</div>`}<button class="watch-btn-overlay">WATCH NOW</button></div>
                 </div>
             </div>`;
-        }).join(''); 
-        updateCounts(); 
+        }).join('');
+        document.getElementById('c-all').innerText = matchDatabase.length;
+        document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m.cat === 'Cricket').length;
+        document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m.cat === 'IPL').length;
     }
 
-    function openLinksFromFiltered(realIdx) { const m = matchDatabase[realIdx]; document.getElementById('link-title').innerText = m.t1 + " vs " + m.t2; document.getElementById('link-area').innerHTML = m.links.map(l => `<div class="link-row" onclick="playStream('${l.url}', '${m.t1} vs ${m.t2}')"><i class="fa-solid fa-play me-3 text-warning"></i><span>${l.name}</span></div>`).join(''); document.getElementById('link-overlay').style.display = 'block'; }
-    function closeLink() { document.getElementById('link-overlay').style.display = 'none'; }
-    function updateCounts() { document.getElementById('c-all').innerText = matchDatabase.length; document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m.cat === 'Cricket').length; document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m.cat === 'IPL').length; }
-    function searchFn() { let val = document.getElementById('searchInput').value.toLowerCase(); let filtered = matchDatabase.filter(m => (m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val)) && (currentFilter === 'All' || m.cat === currentFilter)); document.getElementById('match-list').innerHTML = filtered.map((m) => `<div class="match-card" onclick="openLinksFromFiltered(matchDatabase.indexOf(m))"><img src="${m.card}" class="m-card-img"><div class="card-overlay"><div class="card-top-row"><div class="card-cat-text">${m.cat}</div></div><div class="card-mid-row"><div class="team-box"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-text">VS</div><div class="team-box"><img src="${m.t2_img}"><div>${m.t2}</div></div></div><div class="card-bottom-row">${m.isLive ? '<div class="live-tag">LIVE</div>' : `<div class="time-text">${m.time.replace('T', ' ')}</div>`}<button class="watch-btn-overlay"><i class="fa-solid fa-play"></i> WATCH NOW</button></div></div></div>`).join(''); }
+    function openLinks(idx) {
+        const m = matchDatabase[idx];
+        document.getElementById('link-title').innerText = m.t1 + " vs " + m.t2;
+        document.getElementById('link-area').innerHTML = m.links.map(l => `<div class="link-row" onclick="playStream('${l.url}')"><span>${l.name}</span></div>`).join('');
+        document.getElementById('link-overlay').style.display = 'block';
+    }
 
-    let startY, startV; 
-    document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startV = brightness; document.getElementById('bright-box').style.display='flex'; }); 
-    document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; brightness = Math.min(Math.max(startV+d, 0), 1); document.getElementById('br-mask').style.opacity = 1-brightness; document.getElementById('b-fill').style.height = (brightness*100)+'%'; }); 
-    document.getElementById('right-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startV = video.volume; document.getElementById('vol-box').style.display='flex'; }); 
-    document.getElementById('right-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; video.volume = Math.min(Math.max(startV+d, 0), 1); document.getElementById('v-fill').style.height = (video.volume*100)+'%'; }); 
-    document.getElementById('left-zone').addEventListener('touchend', () => document.getElementById('bright-box').style.display='none');
-    document.getElementById('right-zone').addEventListener('touchend', () => document.getElementById('vol-box').style.display='none');
-    document.getElementById('left-zone').addEventListener('click', () => { if(!isLocked) document.getElementById('player-controls').classList.toggle('hide'); });
-    document.getElementById('right-zone').addEventListener('click', () => { if(!isLocked) document.getElementById('player-controls').classList.toggle('hide'); });
-    const seek = document.getElementById('seek-slider'); seek.addEventListener('input', () => { video.currentTime = (seek.value / 100) * video.duration; }); 
-    video.addEventListener('timeupdate', () => { seek.value = (video.currentTime / video.duration) * 100 || 0; document.getElementById('time-lbl').innerText = formatTime(video.currentTime) + " / " + formatTime(video.duration); document.getElementById('p-play').className = video.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause'; }); 
-    function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s/60), sc = Math.floor(s%60); return (m<10?'0'+m:m)+":"+(sc<10?'0'+sc:sc); }
+    function playStream(url) {
+        document.getElementById('link-overlay').style.display = 'none';
+        document.getElementById('player-layer').style.display = 'block';
+        if (Hls.isSupported()){ let h = new Hls(); h.loadSource(url); h.attachMedia(video); h.on(Hls.Events.MANIFEST_PARSED, ()=>video.play()); } else { video.src = url; video.play(); }
+    }
+
+    function openAdmin() { if(prompt("Pass:") === "Tecra@123") { document.getElementById('admin-panel').style.display='block'; renderAdminList(); } }
+    function closeAdmin() { document.getElementById('admin-panel').style.display='none'; }
+    function renderAdminList() { document.getElementById('admin-items-list').innerHTML = matchDatabase.map((m, i) => `<div class="admin-item"><span>${m.t1} vs ${m.t2}</span><div><i class="fa-solid fa-pen text-info me-3" onclick="editMatch(${i})"></i><i class="fa-solid fa-trash text-danger" onclick="deleteMatch(${i})"></i></div></div>`).join(''); }
+    function deleteMatch(i) { if(confirm("Delete from Cloud?")) { matchDatabase.splice(i, 1); db.ref('matches').set(matchDatabase); } }
+    
+    function editMatch(i) { 
+        const m = matchDatabase[i]; document.getElementById('edit-index').value = i; document.getElementById('m-cat').value = m.cat; document.getElementById('m-t1').value = m.t1; document.getElementById('m-t2').value = m.t2; document.getElementById('m-live').checked = m.isLive; document.getElementById('m-time').value = m.time;
+        const container = document.getElementById('links-container'); 
+        container.innerHTML = m.links.map((l, idx) => `<div class="link-input-group">${idx > 0 ? `<button class="del-link-btn" onclick="this.parentElement.remove()">×</button>` : ''}<div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" value="${l.name}"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" value="${l.url}"></div></div></div>`).join('');
+        document.getElementById('cancel-edit-btn').style.display = 'block'; 
+    }
+    
+    function resetAdminForm() { document.getElementById('edit-index').value = "-1"; document.getElementById('m-live').checked = false; document.getElementById('m-push-key').value = ""; document.getElementById('cancel-edit-btn').style.display = 'none'; document.getElementById('links-container').innerHTML = '<div class="link-input-group"><div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" placeholder="URL"></div></div></div>'; renderAdminList(); }
+    
+    function addNewLinkField() { const div = document.createElement('div'); div.className = "link-input-group"; div.innerHTML = `<button class="del-link-btn" onclick="this.parentElement.remove()">×</button><div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" placeholder="URL"></div></div>`; document.getElementById('links-container').appendChild(div); }
+    
+    function toggleSearch(e) { e.stopPropagation(); let s = document.getElementById('searchBox'); s.style.display = (s.style.display==='block')?'none':'block'; }
+    function hideSearchOnClick() { document.getElementById('searchBox').style.display = 'none'; }
+    function filterData(c, btn) { currentFilter = c; document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); refreshUI(); }
+    function closePlayer() { document.getElementById('player-layer').style.display = 'none'; video.pause(); }
+    function closeLink() { document.getElementById('link-overlay').style.display = 'none'; }
+    function openShareSheet() { document.getElementById('share-sheet-overlay').classList.add('show'); }
+    function closeShareSheet() { document.getElementById('share-sheet-overlay').classList.remove('show'); }
+    function searchFn() { let val = document.getElementById('searchInput').value.toLowerCase(); let filtered = matchDatabase.filter(m => (m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val))); document.getElementById('match-list').innerHTML = filtered.map((m) => `<div class="match-card" onclick="openLinks(${matchDatabase.indexOf(m)})"><img src="${m.card}" class="m-card-img"><div class="card-overlay"><div class="card-mid-row"><div class="team-box"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-text">VS</div><div class="team-box"><img src="${m.t2_img}"><div>${m.t2}</div></div></div><div class="card-bottom-row"><div>${m.time}</div><button class="watch-btn-overlay">WATCH NOW</button></div></div></div>`).join(''); }
 </script>
 </body>
 </html>
