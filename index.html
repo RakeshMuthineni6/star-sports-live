@@ -18,7 +18,7 @@
 
     <style>
         :root { --bg: #051412; --card: #0e2522; --accent: #f7d417; --sky: #00d4ff; --text: #bfc9c7; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 60px; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         /* SPLASH SCREEN */
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20000; transition: opacity 0.5s; }
@@ -32,6 +32,22 @@
         .topbar h4 { font-size: 20px; font-weight: bold; margin: 0; }
         .top-icons i { font-size: 18px; cursor: pointer; padding: 5px; }
 
+        /* SIDEBAR MENU */
+        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #0e2522; z-index: 35000; transition: 0.3s; padding: 20px; border-right: 1px solid #1c3631; }
+        #sidebar.active { left: 0; }
+        .menu-item { padding: 15px; border-bottom: 1px solid #1c3631; display: flex; align-items: center; gap: 15px; cursor: pointer; color: white; text-decoration: none; }
+        .menu-item i { color: var(--accent); width: 20px; }
+        #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 34000; }
+
+        /* PRIVACY PANEL */
+        #privacy-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 40000; padding: 20px; overflow-y: auto; }
+        .pp-content { color: #bfc9c7; font-size: 14px; line-height: 1.6; padding-bottom: 30px; }
+        .pp-content h5 { color: var(--accent); margin-top: 20px; font-weight: bold; }
+
+        /* REFRESH ANIMATION */
+        .spin-anim { animation: rotate 1s linear; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
         .search-container { display: none; padding: 10px 15px; background: var(--bg); animation: slideDown 0.3s ease-out; }
         #searchInput { width: 100%; padding: 10px 18px; border-radius: 25px; border: 1px solid #1c3631; background: var(--card); color: white; outline: none; }
         @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -42,7 +58,7 @@
         .badge-count { background: #e50914; border-radius: 50%; padding: 1px 6px; font-size: 10px; margin-left: 6px; border: 1px solid white; }
 
         /* MATCH CARD DESIGN */
-        .match-card { position: relative; margin: 15px; border-radius: 20px; overflow: hidden; height: 210px; border: 1px solid #1c3631; box-shadow: 0 10px 20px rgba(0,0,0,0.5); cursor: pointer; }
+        .match-card { position: relative; margin: 15px; border-radius: 20px; overflow: hidden; height: 210px; border: 1px solid #1c3631; box-shadow: 0 10px 20px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s; }
         .m-card-img { width: 100%; height: 100%; object-fit: cover; }
         .card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,1) 15%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.6) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 15px; }
         .card-top-row { display: flex; justify-content: space-between; align-items: center; }
@@ -59,7 +75,7 @@
 
         @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* ULTRA-MODERN ADMIN PANEL DESIGN */
+        /* ULTRA-MODERN ADMIN PANEL */
         #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 30000; padding: 0; overflow-y: auto; color: #f1f5f9; }
         .admin-header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         .admin-header h4 { margin: 0; font-size: 18px; color: #38bdf8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
@@ -78,7 +94,6 @@
         .admin-label { font-size: 12px; color: #38bdf8; font-weight: 700; margin-bottom: 8px; display: block; text-transform: uppercase; }
         
         .admin-input, .admin-select { background: #0f172a !important; border: 1px solid #334155 !important; color: #f8fafc !important; font-size: 14px !important; padding: 14px !important; border-radius: 12px !important; }
-        .admin-input::placeholder { color: #475569; }
         
         .link-input-group { background: #1a2235; padding: 15px; border-radius: 14px; margin-top: 12px; border: 1px solid #334155; position: relative; }
         .del-link-btn { position: absolute; top: -10px; right: -10px; background: #f43f5e; color: white; border-radius: 50%; width: 26px; height: 26px; border: 2px solid #1e293b; }
@@ -89,18 +104,19 @@
         .btn-save { background: #38bdf8; color: #0f172a; border: none; font-weight: 800; font-size: 16px; padding: 16px; border-radius: 14px; flex-grow: 1; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4); }
         .btn-cancel-edit { background: #334155; color: #f1f5f9; border: none; font-weight: 700; padding: 16px; border-radius: 14px; }
 
-        /* General Sheet & Overlays */
+        /* AD CONTAINERS */
+        .inline-ad { margin: 15px; text-align: center; border-radius: 10px; background: rgba(255,255,255,0.05); padding: 5px; }
+        .sticky-footer-ad { position: fixed; bottom: 0; left: 0; width: 100%; height: 55px; background: #000; z-index: 10000; text-align: center; display: flex; justify-content: center; align-items: center; border-top: 1px solid #1c3631; }
+
+        /* General Sheet & Player */
         #share-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 40000; justify-content: center; align-items: flex-end; }
         #share-sheet-overlay.show { display: flex; }
         #share-sheet { background: #111; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; transform: translateY(100%); transition: transform 0.3s ease-out; }
         #share-sheet-overlay.show #share-sheet { transform: translateY(0); }
         .share-header { display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
-        .share-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none !important; }
         .share-icon-w { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; }
-        .share-item span { color: #aaa; font-size: 12px; }
-        .sh-ws { background-color: #25D366; } .sh-tg { background-color: #0088cc; } .sh-fb { background-color: #3b5998; } .sh-ms { background-color: #0078FF; }
-
+        
         #player-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; }
         .v-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         video { width: 100%; max-height: 100%; }
@@ -127,14 +143,58 @@
     <div class="loader-dot"></div>
 </div>
 
+<div id="menu-overlay" onclick="toggleMenu()"></div>
+<div id="sidebar">
+    <div class="d-flex align-items-center mb-4" style="border-bottom: 1px solid var(--accent); padding-bottom: 15px;">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGEMIb2NLYINkRimbJUxmjfY_GeETgfph0hH2csK7sYmxC4upohieqkyB-43fg_HoQmgHhp0aNSLy2aGfy_fJI7uIReIAqWMfC8T1L65oTbMMAaRDBKwcLDxSM5Fi9SjvGyGVab4BGC85pmFFnpnXIyeOsd3hcNs5Vg0Zz6msAGXX8HUg7OUOac_skmn8/s2048/Gemini_Generated_Image_a89yqoa89yqoa89y.png" style="width:50px; border-radius:10px;" class="me-3">
+        <h5 class="m-0">SportSync Menu</h5>
+    </div>
+    <div class="menu-item" onclick="openAdmin()">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Admin Control</span>
+    </div>
+    <div class="menu-item" onclick="openPrivacy()">
+        <i class="fa-solid fa-file-contract"></i>
+        <span>Privacy Policy</span>
+    </div>
+</div>
+
+<div id="privacy-panel">
+    <div class="topbar"><i class="fa-solid fa-arrow-left" onclick="closePrivacy()"></i><h4>Privacy Policy</h4><i></i></div>
+    <div class="pp-content mt-4">
+        <h5>1. Introduction</h5>
+        <p>Welcome to SportSync Live. We value your privacy and are committed to protecting any information you may share with us. This Privacy Policy outlines how we handle data within our application.</p>
+        
+        <h5>2. Information We Collect</h5>
+        <p>SportSync Live is designed to provide sports updates and streaming links. We do not require you to create an account or provide personal information like your name, email address, or phone number to use the basic features of the app.</p>
+        
+        <h5>3. Google AdSense & Cookies</h5>
+        <p>We use Google AdSense to serve advertisements. Google, as a third-party vendor, uses cookies to serve ads on our site. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our site and/or other sites on the Internet. Users may opt out of personalized advertising by visiting Google's Ad Settings.</p>
+        
+        <h5>4. Third-Party Links</h5>
+        <p>Our app contains links to external streaming sources and websites. We do not own or control these third-party platforms. We are not responsible for the privacy practices or content of these external sites. We encourage you to read their privacy policies separately.</p>
+        
+        <h5>5. Data Security</h5>
+        <p>We take reasonable measures to protect any data processed within the app. However, please be aware that no method of transmission over the internet or method of electronic storage is 100% secure.</p>
+        
+        <h5>6. Changes to This Policy</h5>
+        <p>We may update our Privacy Policy from time to time. Any changes will be posted on this page. Your continued use of the app after changes are made signifies your acceptance of the new policy.</p>
+        
+        <h5>7. Contact Us</h5>
+        <p>If you have any questions or suggestions regarding our Privacy Policy, please contact us through the official support channels.</p>
+    </div>
+</div>
+
 <div id="app-view">
     <div class="topbar">
-        <h4>SportSync Live</h4>
+        <div class="d-flex align-items-center">
+            <i class="fa-solid fa-bars me-3" style="font-size: 20px; cursor: pointer;" onclick="toggleMenu()"></i>
+            <h4>SportSync Live</h4>
+        </div>
         <div class="top-icons">
             <i class="fa-solid fa-share-nodes me-3" onclick="openShareSheet()"></i>
-            <i class="fa-solid fa-rotate-right me-3" onclick="refreshData()"></i>
-            <i class="fa-solid fa-magnifying-glass me-3" id="searchTrigger" onclick="toggleSearch(event)"></i>
-            <i class="fa-solid fa-lock" onclick="openAdmin()"></i>
+            <i class="fa-solid fa-rotate-right me-3" id="refreshIcon" onclick="manualRefresh()"></i>
+            <i class="fa-solid fa-magnifying-glass" id="searchTrigger" onclick="toggleSearch(event)"></i>
         </div>
     </div>
     
@@ -146,29 +206,25 @@
         <div class="f-btn" onclick="filterData('IPL', this)">IPL <span class="badge-count" id="c-ipl">0</span></div>
     </div>
 
-    <div style="text-align: center; margin-bottom: 10px;">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-1895449179923280"
-             data-ad-slot="6999248761"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
-
     <div id="match-list"></div>
+</div>
+
+<div class="sticky-footer-ad">
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:320px;height:50px"
+         data-ad-client="ca-pub-1895449179923280"
+         data-ad-slot="6999248761"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <div id="share-sheet-overlay" onclick="closeShareSheet()">
     <div id="share-sheet" onclick="event.stopPropagation()">
         <div class="share-header"><h5>Share App Via</h5><i class="fa-solid fa-times fs-4" onclick="closeShareSheet()"></i></div>
         <div class="share-grid">
-            <a href="#" class="share-item" id="share-wa" target="_blank"><div class="share-icon-w sh-ws"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
-            <a href="#" class="share-item" id="share-tg" target="_blank"><div class="share-icon-w sh-tg"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
-            <a href="#" class="share-item" id="share-fb" target="_blank"><div class="share-icon-w sh-fb"><i class="fa-brands fa-facebook-f"></i></div><span>Facebook</span></a>
-            <a href="#" class="share-item" id="share-ms" target="_blank"><div class="share-icon-w sh-ms"><i class="fa-brands fa-facebook-messenger"></i></div><span>Messenger</span></a>
+            <a href="#" class="share-item" id="share-wa" target="_blank"><div class="share-icon-w sh-ws" style="background:#25D366"><i class="fa-brands fa-whatsapp"></i></div><span>WhatsApp</span></a>
+            <a href="#" class="share-item" id="share-tg" target="_blank"><div class="share-icon-w sh-tg" style="background:#0088cc"><i class="fa-brands fa-telegram"></i></div><span>Telegram</span></a>
+            <a href="#" class="share-item" id="share-fb" target="_blank"><div class="share-icon-w sh-fb" style="background:#3b5998"><i class="fa-brands fa-facebook-f"></i></div><span>Facebook</span></a>
+            <a href="#" class="share-item" id="share-ms" target="_blank"><div class="share-icon-w sh-ms" style="background:#0078FF"><i class="fa-brands fa-facebook-messenger"></i></div><span>Messenger</span></a>
         </div>
     </div>
 </div>
@@ -273,7 +329,6 @@
 <script>
     const firebaseConfig = { apiKey: "AIzaSyDid9PyTmzKwrM0wLERsKIOf2GEdu9tp5M", authDomain: "sportsynclive-3ef2c.firebaseapp.com", projectId: "sportsynclive-3ef2c", storageBucket: "sportsynclive-3ef2c.firebasestorage.app", messagingSenderId: "433748656595", appId: "1:433748656595:web:ae73836ff99dfae723ef26", measurementId: "G-VBQ232G14H" };
     firebase.initializeApp(firebaseConfig); 
-    firebase.analytics();
     const database = firebase.database();
 
     let matchDatabase = [];
@@ -300,20 +355,31 @@
         });
     }
 
-    function openShareSheet() {
-        const appUrl = "https://play.google.com/store/apps/details?id=starsports.aplitob";
-        const shareText = encodeURIComponent(`Watch Live Cricket & IPL in HD! Download SportSync Live App now:\n${appUrl}`);
-        document.getElementById('share-wa').href = `https://api.whatsapp.com/send?text=${shareText}`;
-        document.getElementById('share-tg').href = `https://telegram.me/share/url?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent('Watch Live Cricket & IPL in HD!')}`;
-        document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}`;
-        document.getElementById('share-ms').href = `fb-messenger://share/?link=${encodeURIComponent(appUrl)}`;
-        document.getElementById('share-sheet-overlay').classList.add('show');
+    function toggleMenu() {
+        const side = document.getElementById('sidebar');
+        const over = document.getElementById('menu-overlay');
+        if(side.classList.contains('active')) {
+            side.classList.remove('active');
+            over.style.display = 'none';
+        } else {
+            side.classList.add('active');
+            over.style.display = 'block';
+        }
     }
-    function closeShareSheet() { document.getElementById('share-sheet-overlay').classList.remove('show'); }
+
+    function openPrivacy() { toggleMenu(); document.getElementById('privacy-panel').style.display='block'; }
+    function closePrivacy() { document.getElementById('privacy-panel').style.display='none'; }
+
+    function manualRefresh() {
+        const icon = document.getElementById('refreshIcon');
+        icon.classList.add('spin-anim');
+        refreshData();
+        setTimeout(() => icon.classList.remove('spin-anim'), 1000);
+    }
 
     function toggleSearch(e) { e.stopPropagation(); let s = document.getElementById('searchBox'); s.style.display = (s.style.display==='block')?'none':'block'; if(s.style.display==='block') document.getElementById('searchInput').focus(); }
     function hideSearchOnClick(e) { let s = document.getElementById('searchBox'); if(s.style.display === 'block') s.style.display = 'none'; }
-    function openAdmin() { if(prompt("Password:") === "Tecra@123") { document.getElementById('admin-panel').style.display='block'; renderAdminList(); } }
+    function openAdmin() { toggleMenu(); if(prompt("Password:") === "Tecra@123") { document.getElementById('admin-panel').style.display='block'; renderAdminList(); } }
     function closeAdmin() { document.getElementById('admin-panel').style.display='none'; resetAdminForm(); }
     
     function renderAdminList() { const list = document.getElementById('admin-items-list'); list.innerHTML = matchDatabase.map((m, i) => `<div class="admin-item"><span>${m.t1} vs ${m.t2}</span><div><i class="fa-solid fa-pen-to-square text-info me-3" onclick="editMatch(${i})"></i><i class="fa-solid fa-trash text-danger" onclick="deleteMatch('${m.id}')"></i></div></div>`).join(''); }
@@ -369,12 +435,8 @@
             card: await getImg('m-card-file', 'm-card-url', oldMatch.card),
             links, time: document.getElementById('m-time').value, isLive: document.getElementById('m-live').checked 
         }; 
-        
-        if(idx > -1) {
-            database.ref('matches/' + editId).set(mObj);
-        } else {
-            database.ref('matches').push(mObj);
-        }
+        if(idx > -1) database.ref('matches/' + editId).set(mObj);
+        else database.ref('matches').push(mObj);
         resetAdminForm(); 
     }
 
@@ -382,20 +444,14 @@
         document.getElementById('edit-index').value = "-1"; document.getElementById('edit-id').value = ""; document.getElementById('form-title').innerText = "Create Match Entry"; document.getElementById('save-btn').innerText = "PUSH TO CLOUD"; document.getElementById('cancel-edit-btn').style.display = "none"; document.getElementById('m-t1').value = ""; document.getElementById('m-t2').value = ""; document.getElementById('m-time').value = ""; document.getElementById('m-live').checked = false; document.getElementById('m-card-url').value = ""; document.getElementById('m-t1-url').value = ""; document.getElementById('m-t2-url').value = ""; document.getElementById('m-card-file').value = ""; document.getElementById('m-t1-file').value = ""; document.getElementById('m-t2-file').value = ""; document.getElementById('links-container').innerHTML = `<div class="link-input-group"><div class="row g-2"><div class="col-5"><input type="text" class="form-control admin-input s-name" placeholder="Server"></div><div class="col-7"><input type="text" class="form-control admin-input s-url" placeholder="URL"></div></div></div>`; renderAdminList(); 
     }
 
-    function playStream(url, title) { closeLink(); document.getElementById('player-layer').style.display = 'block'; document.getElementById('v-title').innerText = title; if (Hls.isSupported()) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } else { video.src = url; video.play(); } }
-    function closePlayer() { document.getElementById('player-layer').style.display = 'none'; video.pause(); }
-    function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); }
-    function skip(v, e) { e.stopPropagation(); video.currentTime += v; }
-    function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
-    function toggleLock(e) { e.stopPropagation(); isLocked = !isLocked; document.getElementById('lock-btn').className = isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open'; document.getElementById('player-controls').classList.toggle('hide', isLocked); }
-    function filterData(c, btn) { currentFilter = c; document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); refreshData(); }
-    
     function refreshData() { 
         let filtered = currentFilter === 'All' ? matchDatabase : matchDatabase.filter(m => m.cat === currentFilter); 
         const list = document.getElementById('match-list'); 
-        list.innerHTML = filtered.map((m) => {
+        list.innerHTML = "";
+        
+        filtered.forEach((m, index) => {
             const realIdx = matchDatabase.indexOf(m);
-            return `<div class="match-card" onclick="openLinksFromFiltered(${realIdx})">
+            const cardHTML = `<div class="match-card" onclick="openLinksFromFiltered(${realIdx})">
                 ${m.card ? `<img src="${m.card}" class="m-card-img">` : '<div style="background:#222;height:100%"></div>'}
                 <div class="card-overlay">
                     <div class="card-top-row"><div class="card-cat-text">${m.cat}</div></div>
@@ -410,15 +466,35 @@
                     </div>
                 </div>
             </div>`;
-        }).join(''); 
+            
+            list.innerHTML += cardHTML;
+
+            if ((index + 1) % 3 === 0) {
+                list.innerHTML += `<div class="inline-ad">
+                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1895449179923280" data-ad-slot="6999248761" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
+                </div>`;
+            }
+        });
         updateCounts(); 
     }
 
+    function updateCounts() { document.getElementById('c-all').innerText = matchDatabase.length; document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m.cat === 'Cricket').length; document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m.cat === 'IPL').length; }
+    function playStream(url, title) { closeLink(); document.getElementById('player-layer').style.display = 'block'; document.getElementById('v-title').innerText = title; if (Hls.isSupported()) { if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); } else { video.src = url; video.play(); } }
+    function closePlayer() { document.getElementById('player-layer').style.display = 'none'; video.pause(); }
+    function togglePlay(e) { e.stopPropagation(); video.paused ? video.play() : video.pause(); }
+    function skip(v, e) { e.stopPropagation(); video.currentTime += v; }
+    function toggleFS(e) { e.stopPropagation(); if(!document.fullscreenElement) document.getElementById('v-container').requestFullscreen(); else document.exitFullscreen(); }
+    function toggleLock(e) { e.stopPropagation(); isLocked = !isLocked; document.getElementById('lock-btn').className = isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open'; document.getElementById('player-controls').classList.toggle('hide', isLocked); }
+    function filterData(c, btn) { currentFilter = c; document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); refreshData(); }
     function openLinksFromFiltered(realIdx) { const m = matchDatabase[realIdx]; document.getElementById('link-title').innerText = m.t1 + " vs " + m.t2; document.getElementById('link-area').innerHTML = m.links.map(l => `<div class="link-row" onclick="playStream('${l.url}', '${m.t1} vs ${m.t2}')"><i class="fa-solid fa-play me-3 text-warning"></i><span>${l.name}</span></div>`).join(''); document.getElementById('link-overlay').style.display = 'block'; }
     function closeLink() { document.getElementById('link-overlay').style.display = 'none'; }
-    function updateCounts() { document.getElementById('c-all').innerText = matchDatabase.length; document.getElementById('c-cricket').innerText = matchDatabase.filter(m => m.cat === 'Cricket').length; document.getElementById('c-ipl').innerText = matchDatabase.filter(m => m.cat === 'IPL').length; }
-    function searchFn() { let val = document.getElementById('searchInput').value.toLowerCase(); let filtered = matchDatabase.filter(m => (m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val)) && (currentFilter === 'All' || m.cat === currentFilter)); document.getElementById('match-list').innerHTML = filtered.map((m) => `<div class="match-card" onclick="openLinksFromFiltered(matchDatabase.indexOf(m))"><img src="${m.card}" class="m-card-img"><div class="card-overlay"><div class="card-top-row"><div class="card-cat-text">${m.cat}</div></div><div class="card-mid-row"><div class="team-box"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-text">VS</div><div class="team-box"><img src="${m.t2_img}"><div>${m.t2}</div></div></div><div class="card-bottom-row">${m.isLive ? '<div class="live-tag">LIVE</div>' : `<div class="time-text">${m.time.replace('T', ' ')}</div>`}<button class="watch-btn-overlay"><i class="fa-solid fa-play"></i> WATCH NOW</button></div></div></div>`).join(''); }
+    function openShareSheet() { const appUrl = "https://play.google.com/store/apps/details?id=starsports.aplitob"; const shareText = encodeURIComponent(`Watch Live Cricket & IPL in HD! Download SportSync Live App now:\n${appUrl}`); document.getElementById('share-wa').href = `https://api.whatsapp.com/send?text=${shareText}`; document.getElementById('share-tg').href = `https://telegram.me/share/url?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent('Watch Live Cricket & IPL in HD!')}`; document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}`; document.getElementById('share-ms').href = `fb-messenger://share/?link=${encodeURIComponent(appUrl)}`; document.getElementById('share-sheet-overlay').classList.add('show'); }
+    function closeShareSheet() { document.getElementById('share-sheet-overlay').classList.remove('show'); }
+    function searchFn() { let val = document.getElementById('searchInput').value.toLowerCase(); let filtered = matchDatabase.filter(m => (m.t1.toLowerCase().includes(val) || m.t2.toLowerCase().includes(val)) && (currentFilter === 'All' || m.cat === currentFilter)); refreshDataWithFiltered(filtered); }
+    function refreshDataWithFiltered(f) { const list = document.getElementById('match-list'); list.innerHTML = f.map((m) => `<div class="match-card" onclick="openLinksFromFiltered(${matchDatabase.indexOf(m)})"><img src="${m.card}" class="m-card-img"><div class="card-overlay"><div class="card-top-row"><div class="card-cat-text">${m.cat}</div></div><div class="card-mid-row"><div class="team-box"><img src="${m.t1_img}"><div>${m.t1}</div></div><div class="vs-text">VS</div><div class="team-box"><img src="${m.t2_img}"><div>${m.t2}</div></div></div><div class="card-bottom-row">${m.isLive ? '<div class="live-tag">LIVE</div>' : `<div class="time-text">${m.time.replace('T', ' ')}</div>`}<button class="watch-btn-overlay"><i class="fa-solid fa-play"></i> WATCH NOW</button></div></div></div>`).join(''); }
 
+    // GESTURES
     let startY, startV; 
     document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startV = brightness; document.getElementById('bright-box').style.display='flex'; }); 
     document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; brightness = Math.min(Math.max(startV+d, 0), 1); document.getElementById('br-mask').style.opacity = 1-brightness; document.getElementById('b-fill').style.height = (brightness*100)+'%'; }); 
@@ -426,8 +502,6 @@
     document.getElementById('right-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; video.volume = Math.min(Math.max(startV+d, 0), 1); document.getElementById('v-fill').style.height = (video.volume*100)+'%'; }); 
     document.getElementById('left-zone').addEventListener('touchend', () => document.getElementById('bright-box').style.display='none');
     document.getElementById('right-zone').addEventListener('touchend', () => document.getElementById('vol-box').style.display='none');
-    document.getElementById('left-zone').addEventListener('click', () => { if(!isLocked) document.getElementById('player-controls').classList.toggle('hide'); });
-    document.getElementById('right-zone').addEventListener('click', () => { if(!isLocked) document.getElementById('player-controls').classList.toggle('hide'); });
     const seek = document.getElementById('seek-slider'); seek.addEventListener('input', () => { video.currentTime = (seek.value / 100) * video.duration; }); 
     video.addEventListener('timeupdate', () => { seek.value = (video.currentTime / video.duration) * 100 || 0; document.getElementById('time-lbl').innerText = formatTime(video.currentTime) + " / " + formatTime(video.duration); document.getElementById('p-play').className = video.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause'; }); 
     function formatTime(s) { if(isNaN(s)) return "00:00"; const m = Math.floor(s/60), sc = Math.floor(s%60); return (m<10?'0'+m:m)+":"+(sc<10?'0'+sc:sc); }
