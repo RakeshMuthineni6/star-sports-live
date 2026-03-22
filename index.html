@@ -131,6 +131,9 @@
         #br-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; pointer-events: none; z-index: 19999; opacity: 0; }
         .link-row { background: #0e2522; padding: 15px; margin: 10px; border-radius: 10px; border: 1px solid #1c3631; display: flex; align-items: center; cursor: pointer; }
         #link-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:15000; }
+
+        /* YOUTUBE BACK ICON STYLE */
+        #yt-back-overlay { display: none; position: absolute; top: 20px; left: 20px; z-index: 20100; color: white; font-size: 24px; text-shadow: 0 0 10px black; cursor: pointer; }
     </style>
 </head>
 <body onclick="hideSearchOnClick(event)">
@@ -313,6 +316,8 @@
 
 <div id="player-layer">
     <div class="v-wrap" id="v-container">
+        <i class="fa-solid fa-arrow-left" id="yt-back-overlay" onclick="closePlayer()"></i>
+
         <div id="left-zone" style="position:absolute;left:0;width:40%;height:100%;z-index:20005;"></div>
         <div id="right-zone" style="position:absolute;right:0;width:40%;height:100%;z-index:20005;"></div>
         <div id="bright-box" class="gesture-box" style="left:20px;"><div class="bar-fill" id="b-fill"></div><i class="fa-solid fa-sun mt-2"></i></div>
@@ -333,6 +338,7 @@
     let matchDatabase = [];
     let currentFilter = 'All';
     let hls = null, isLocked = false, brightness = 1.0;
+    let playingYoutube = false; // TO TRACK IF CURRENTLY PLAYING YOUTUBE
 
     window.onload = () => { 
         setTimeout(() => { 
@@ -484,18 +490,19 @@
         document.getElementById('player-layer').style.display = 'block'; 
         document.getElementById('v-title').innerText = title; 
         const container = document.getElementById('v-container');
+        const ytBack = document.getElementById('yt-back-overlay');
 
-        // Reset: Clear any previous players (video or iframe)
+        // Reset players
         const oldVideo = container.querySelector('video');
         if(oldVideo) oldVideo.remove();
         const oldIframe = container.querySelector('iframe');
         if(oldIframe) oldIframe.remove();
         if(hls) { hls.destroy(); hls = null; }
 
-        // Detection logic
-        let isYoutube = url.includes("youtube.com") || url.includes("youtu.be");
+        playingYoutube = url.includes("youtube.com") || url.includes("youtu.be");
         
-        if (isYoutube) {
+        if (playingYoutube) {
+            ytBack.style.display = "block"; // SHOW BACK ICON FOR YT
             let vidId = "";
             if (url.includes("v=")) vidId = url.split("v=")[1].split("&")[0];
             else vidId = url.split("/").pop().split("?")[0];
@@ -504,9 +511,10 @@
             iframe.className = "universal-player";
             iframe.src = `https://www.youtube.com/embed/${vidId}?autoplay=1&rel=0`;
             iframe.allow = "autoplay; fullscreen";
-            container.prepend(iframe); // Add to back so controls remain visible
-            document.getElementById('player-controls').classList.add('hide'); // Hide custom controls for YT
+            container.prepend(iframe);
+            document.getElementById('player-controls').classList.add('hide'); 
         } else {
+            ytBack.style.display = "none"; // HIDE YT BACK ICON
             const video = document.createElement('video');
             video.id = "main-video";
             video.playsInline = true;
@@ -528,7 +536,6 @@
                 video.play();
             }
 
-            // Sync seek bar with new video element
             video.addEventListener('timeupdate', () => {
                 const seek = document.getElementById('seek-slider');
                 seek.value = (video.currentTime / video.duration) * 100 || 0;
@@ -543,7 +550,8 @@
         const video = document.getElementById('main-video');
         if(video) video.pause();
         const iframe = document.querySelector('.universal-player');
-        if(iframe) iframe.src = ""; // Stop audio
+        if(iframe) iframe.src = ""; 
+        playingYoutube = false; // RESET TRACKER
     }
 
     function togglePlay(e) { e.stopPropagation(); const v = document.getElementById('main-video'); if(v) v.paused ? v.play() : v.pause(); }
@@ -560,10 +568,22 @@
 
     // GESTURES
     let startY, startV; 
-    document.getElementById('left-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; startV = brightness; document.getElementById('bright-box').style.display='flex'; }); 
-    document.getElementById('left-zone').addEventListener('touchmove', e => { if(isLocked) return; let d = (startY - e.touches[0].pageY)/150; brightness = Math.min(Math.max(startV+d, 0), 1); document.getElementById('br-mask').style.opacity = 1-brightness; document.getElementById('b-fill').style.height = (brightness*100)+'%'; }); 
-    document.getElementById('right-zone').addEventListener('touchstart', e => { if(isLocked) return; startY = e.touches[0].pageY; const vid = document.getElementById('main-video'); startV = vid ? vid.volume : 1; document.getElementById('vol-box').style.display='flex'; }); 
-    document.getElementById('right-zone').addEventListener('touchmove', e => { if(isLocked) return; const vid = document.getElementById('main-video'); if(!vid) return; let d = (startY - e.touches[0].pageY)/150; vid.volume = Math.min(Math.max(startV+d, 0), 1); document.getElementById('v-fill').style.height = (vid.volume*100)+'%'; }); 
+    document.getElementById('left-zone').addEventListener('touchstart', e => { 
+        if(isLocked || playingYoutube) return; // NO BRIGHTNESS FOR YOUTUBE
+        startY = e.touches[0].pageY; startV = brightness; document.getElementById('bright-box').style.display='flex'; 
+    }); 
+    document.getElementById('left-zone').addEventListener('touchmove', e => { 
+        if(isLocked || playingYoutube) return; 
+        let d = (startY - e.touches[0].pageY)/150; brightness = Math.min(Math.max(startV+d, 0), 1); document.getElementById('br-mask').style.opacity = 1-brightness; document.getElementById('b-fill').style.height = (brightness*100)+'%'; 
+    }); 
+    document.getElementById('right-zone').addEventListener('touchstart', e => { 
+        if(isLocked || playingYoutube) return; // NO VOLUME FOR YOUTUBE
+        startY = e.touches[0].pageY; const vid = document.getElementById('main-video'); startV = vid ? vid.volume : 1; document.getElementById('vol-box').style.display='flex'; 
+    }); 
+    document.getElementById('right-zone').addEventListener('touchmove', e => { 
+        if(isLocked || playingYoutube) return; 
+        const vid = document.getElementById('main-video'); if(!vid) return; let d = (startY - e.touches[0].pageY)/150; vid.volume = Math.min(Math.max(startV+d, 0), 1); document.getElementById('v-fill').style.height = (vid.volume*100)+'%'; 
+    }); 
     document.getElementById('left-zone').addEventListener('touchend', () => document.getElementById('bright-box').style.display='none');
     document.getElementById('right-zone').addEventListener('touchend', () => document.getElementById('vol-box').style.display='none');
     
